@@ -4,11 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-responder = "*"
-mapbox = "*"
+flask = "*"
+flask-sqlalchemy = "*"
 
 [dev-packages]
-"flake8" = "*"
+pytest = "*"
+black = "*"
 
 [requires]
 python_version = "3.6"
