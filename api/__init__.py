@@ -13,6 +13,10 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
+    from .plan import bp
+
+    app.register_blueprint(bp, url_prefix="/plans")
+
     @app.route("/")
     def hello():
         return "Hello, world!"
