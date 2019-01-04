@@ -13,9 +13,13 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    from .plan import bp
+    from .plan import bp as plans
 
-    app.register_blueprint(bp, url_prefix="/plans")
+    app.register_blueprint(plans, url_prefix="/plans")
+
+    from .users import bp as users
+
+    app.register_blueprint(users, url_prefix="/users")
 
     @app.route("/")
     def hello():

@@ -1,9 +1,9 @@
 from flask import Blueprint, json, jsonify, request
 
-from .models import Plan, db
+from .models import Plan, User, db
 from .schemas import PlanSchema
 
-bp = Blueprint("plan", __name__)
+bp = Blueprint("plans", __name__)
 
 plans_schema = PlanSchema(only=("id", "name", "user"), many=True)
 plan_schema = PlanSchema(only=("id", "name", "user", "mapping"))
@@ -15,7 +15,9 @@ def new_plan():
     name = data["name"]
     serialized = json.dumps(data["mapping"])
 
-    plan = Plan(name=name, serialized=serialized)
+    user = User.query.get(data["user_id"])
+
+    plan = Plan(name=name, serialized=serialized, user=user)
 
     db.session.add(plan)
     db.session.commit()
@@ -23,7 +25,7 @@ def new_plan():
 
 
 @bp.route("/", methods=["GET"])
-def get_plans():
+def list_plans():
     plans = Plan.query.all()
     records = plans_schema.dump(plans)
     return jsonify(records)
@@ -31,16 +33,18 @@ def get_plans():
 
 @bp.route("/<int:id>", methods=["GET"])
 def get_plan(id):
-    plan = Plan.query.filter_by(id=id).first_or_404()
+    plan = Plan.query.get_or_404(id)
     return jsonify(plan_schema.dump(plan))
 
 
 @bp.route("/<int:id>", methods=["PATCH"])
 def update_plan(id):
-    plan = Plan.query.filter_by(id=id).first_or_404()
+    plan = Plan.query.get_or_404(id)
 
     data = request.get_json()
-    plan.update(name=data.get("name", None), serialized=data.get("serialized", None))
+    plan.update(
+        name=data.get("name", None), serialized=json.dumps(data.get("serialized", None))
+    )
     db.session.commit()
 
     return "", 204
@@ -51,7 +55,7 @@ def overwrite_plan(id):
     plan = Plan.query.filter_by(id=id).first_or_404()
 
     data = request.get_json()
-    plan.update(name=data["name"], serialized=data["serialized"])
+    plan.update(name=data["name"], serialized=json.dump(data["serialized"]))
     db.session.commit()
 
     return "", 204
