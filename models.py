@@ -13,14 +13,6 @@ class Place(db.Model):
         return "<Place {}>".format(self.name)
 
 
-class DistrictingProblem(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
-    place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
-    place = db.relationship("Place", backref=db.backref("problems", lazy="dynamic"))
-    number_of_parts = db.Column(db.Integer, nullable=False)
-
-
 class Plan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)

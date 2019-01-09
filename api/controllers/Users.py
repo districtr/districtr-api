@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, request
+import json
 
-from .models import User, db
-from .schemas import UserSchema
+from ..models import db
+from ..models import User
+from ..schemas import UserSchema
 
 bp = Blueprint("users", __name__)
 
@@ -19,13 +21,14 @@ def list_users():
 @bp.route("/<int:id>", methods=["GET"])
 def get_user(id):
     user = User.query.get_or_404(id)
-    return jsonify(user_schema.dump(user))
+    return jsonify(user_schema.dump(user).data)
 
 
 @bp.route("/", methods=["POST"])
 def new_user():
-    user_data = user_schema.load(request.get_json())
-    user = User(**user_data)
+    user_raw_json = request.get_json()
+    user_data = user_schema.load(user_raw_json)
+    user = User(**user_data.data)
 
     db.session.add(user)
     db.session.commit()

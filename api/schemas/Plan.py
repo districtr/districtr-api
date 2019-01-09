@@ -1,17 +1,10 @@
+
 from flask import json
-from marshmallow import Schema, ValidationError, fields, pre_load
+from marshmallow import Schema
+from marshmallow import fields
+from marshmallow import pre_load
 
-
-class UserSchema(Schema):
-    id = fields.Int()
-    first = fields.Str()
-    last = fields.Str()
-    email = fields.Email()
-
-
-def not_blank(data):
-    if not data:
-        raise ValidationError("Provided data is blank.")
+from .User import UserSchema
 
 
 class PlanSchema(Schema):
@@ -24,9 +17,12 @@ class PlanSchema(Schema):
     created_at = fields.Date(dump_only=True)
     modified_at = fields.Date(dump_only=True)
 
+    # TODO incorporate this somehow – it'll be useful for decoding, but doesn't
+    # get used there as of now.
     def decode_mapping(self, plan):
         return json.loads(plan.serialized)
 
+    # TODO change this method up a bit.
     @pre_load
     def encode_mapping(self, data):
         if "mapping" in data:

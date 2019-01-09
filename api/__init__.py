@@ -1,4 +1,9 @@
+
 from flask import Flask
+
+from .models import db
+from .controllers import PlansController
+from .controllers import UsersController
 
 
 def create_app(test_config=None):
@@ -9,17 +14,11 @@ def create_app(test_config=None):
     else:
         app.config.from_mapping(test_config)
 
-    from .models import db
-
     db.init_app(app)
+    app.register_blueprint(PlansController, url_prefix="/plans")
+    app.register_blueprint(UsersController, url_prefix="/users")
 
-    from .plan import bp as plans
-
-    app.register_blueprint(plans, url_prefix="/plans")
-
-    from .users import bp as users
-
-    app.register_blueprint(users, url_prefix="/users")
+    db.create_all(app=app)
 
     @app.route("/")
     def hello():
