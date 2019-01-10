@@ -7,7 +7,7 @@ from marshmallow import pre_load
 from .User import UserSchema
 
 
-class PlanSchema(Schema):
+class planSchema(Schema):
     id = fields.Int()
     name = fields.Str()
     user_id = fields.Int()
