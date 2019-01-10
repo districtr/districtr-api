@@ -2,7 +2,7 @@
 from datetime import datetime
 from .db import db
 
-class Plan(db.Model):
+class plan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))

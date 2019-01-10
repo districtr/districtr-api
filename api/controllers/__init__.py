@@ -1,5 +1,5 @@
 
-from .Plans import bp as PlansController
-from .Users import bp as UsersController
+from .plans import bp as PlansController
+from .users import bp as UsersController
 
-__all__ = ["Plan", "Users"]
+__all__ = ["plan", "users"]
