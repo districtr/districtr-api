@@ -1,3 +1,4 @@
+
 from flask import Blueprint, jsonify, request
 import json
 
@@ -7,7 +8,7 @@ from ..schemas import UserSchema
 
 bp = Blueprint("users", __name__)
 
-users_schema = UserSchema()
+users_schema = UserSchema(many=True)
 user_schema = UserSchema()
 
 
