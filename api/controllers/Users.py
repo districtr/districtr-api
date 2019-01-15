@@ -35,6 +35,15 @@ def update_user(id):
     return jsonify(user_schema.dump(user).data), 200
 
 
+@bp.route("/<int:id>", methods=["DELETE"])
+def delete_user(id):
+    user = User.query.get_or_404(id)
+    db.session.delete(user)
+    db.session.commit()
+
+    return "", 200
+
+
 @bp.route("/", methods=["POST"])
 def new_user():
     user_raw_json = request.get_json()
