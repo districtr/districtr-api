@@ -1,4 +1,3 @@
-
 from .db import db
 from .Place import place
 from .Plan import plan

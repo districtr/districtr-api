@@ -1,4 +1,3 @@
-
 from .Plan import planSchema
 from .User import userSchema
 
