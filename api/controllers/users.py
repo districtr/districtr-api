@@ -2,12 +2,12 @@
 from flask import Blueprint, jsonify, request
 
 from ..models import User, db
-from ..schemas import UserSchema
+from ..schemas import userSchema
 
 bp = Blueprint("users", __name__)
 
-users_schema = UserSchema(many=True)
-user_schema = UserSchema()
+users_schema = userSchema(many=True)
+user_schema = userSchema()
 
 
 @bp.route("/", methods=["GET"])

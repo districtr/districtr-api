@@ -2,7 +2,7 @@ from marshmallow import Schema
 from marshmallow import fields
 
 
-class UserSchema(Schema):
+class userSchema(Schema):
     id = fields.Int()
     first = fields.Str()
     last = fields.Str()
