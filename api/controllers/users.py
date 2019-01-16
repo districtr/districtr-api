@@ -1,6 +1,5 @@
 
 from flask import Blueprint, jsonify, request
-import json
 
 from ..models import User, db
 from ..schemas import UserSchema

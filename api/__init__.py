@@ -1,7 +1,7 @@
-
 from flask import Flask
 from flask_cors import CORS
 
+from .controllers import plans, users
 from .models import db
 
 
@@ -15,10 +15,6 @@ def create_app(test_config=None):
         app.config.from_mapping(test_config)
 
     db.init_app(app)
-
-    from .controllers import plans
-    from .controllers import users
-    
     app.register_blueprint(plans, url_prefix="/plans")
     app.register_blueprint(users, url_prefix="/users")
 

@@ -1,9 +1,7 @@
-
 from flask import Blueprint, json, jsonify, request
 
 from ..models import Plan, User, db
 from ..schemas import PlanSchema
-
 
 bp = Blueprint("plans", __name__)
 
