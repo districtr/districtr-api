@@ -1,9 +1,7 @@
 
 from flask import Blueprint, json, jsonify, request
 
-from ..models import db
-from ..models import User
-from ..models import Plan
+from ..models import Plan, User, db
 from ..schemas import PlanSchema
 
 

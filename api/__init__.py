@@ -16,11 +16,11 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    from .controllers import PlansController
-    from .controllers import UsersController
+    from .controllers import plans
+    from .controllers import users
     
-    app.register_blueprint(PlansController, url_prefix="/plans")
-    app.register_blueprint(UsersController, url_prefix="/users")
+    app.register_blueprint(plans, url_prefix="/plans")
+    app.register_blueprint(users, url_prefix="/users")
 
     db.create_all(app=app)
 
