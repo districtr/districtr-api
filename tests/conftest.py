@@ -23,3 +23,12 @@ def app():
 @pytest.fixture
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture
+def client_with_user(client):
+    client.post(
+        "/users/",
+        json={"first": "Max", "last": "Hully", "email": "max.hully@gmail.com"},
+    )
+    return client
