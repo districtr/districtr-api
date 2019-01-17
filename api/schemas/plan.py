@@ -1,16 +1,14 @@
 from flask import json
-from marshmallow import Schema
-from marshmallow import fields
-from marshmallow import pre_load
+from marshmallow import Schema, fields, pre_load
 
-from .user import userSchema
+from .user import UserSchema
 
 
-class planSchema(Schema):
+class PlanSchema(Schema):
     id = fields.Int()
     name = fields.Str()
     user_id = fields.Int()
-    user = fields.Nested(userSchema)
+    user = fields.Nested(UserSchema)
     serialized = fields.Str()
     mapping = fields.Method("decode_mapping")
     created_at = fields.Date(dump_only=True)

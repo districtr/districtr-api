@@ -2,12 +2,17 @@ version: "3"
 
 services:
   gis:
-    ports: 
+    ports:
       - 5432:5432
     image: mdillon/postgis
-    restart: always
+    deploy:
+      replicas: 1
     environment:
       POSTGRES_DB: "gis"
       POSTGRES_PASSWORD: "mgggiskool"
       POSTGRES_USER: "mggg"
       ALLOW_IP_RANGE: "0.0.0.0/0"
+  api:
+    image: mggg/districtr-api
+    ports:
+      - 3000:3000

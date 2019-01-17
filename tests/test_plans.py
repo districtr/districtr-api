@@ -4,13 +4,9 @@ from api.schemas import PlanSchema
 
 
 @pytest.fixture
-def client_with_plan(client, plan_record):
-    client.post(
-        "/users/",
-        json={"first": "Max", "last": "Hully", "email": "max.hully@gmail.com"},
-    )
-    client.post("/plans/", json=plan_record)
-    return client
+def client_with_plan(client_with_user, plan_record):
+    client_with_user.post("/plans/", json=plan_record)
+    return client_with_user
 
 
 @pytest.fixture
