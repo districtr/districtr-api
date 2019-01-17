@@ -1,4 +1,6 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, post_load
+
+from ..models import User
 
 
 class UserSchema(Schema):
@@ -6,3 +8,7 @@ class UserSchema(Schema):
     first = fields.Str()
     last = fields.Str()
     email = fields.Email()
+
+    @post_load
+    def create_user(self, data):
+        return User(**data)

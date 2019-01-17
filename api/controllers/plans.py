@@ -1,12 +1,12 @@
 from flask import Blueprint, json, jsonify, request
 
 from ..models import Plan, User, db
-from ..schemas import planSchema
+from ..schemas import PlanSchema
 
 bp = Blueprint("plans", __name__)
 
-plans_schema = planSchema(only=("id", "name", "user"), many=True)
-plan_schema = planSchema(only=("id", "name", "user", "mapping"))
+plans_schema = PlanSchema(only=("id", "name", "user"), many=True)
+plan_schema = PlanSchema(only=("id", "name", "user", "mapping"))
 
 
 @bp.route("/", methods=["POST"])
