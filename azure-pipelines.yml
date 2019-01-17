@@ -24,14 +24,11 @@ steps:
   displayName: 'Install dependencies from Pipfile'
 
 - script: |
-    python -m pip install flake8
-    flake8 .
+    pipenv run flake8 . --max-line-length 88
   displayName: 'Run lint tests'
 
 - script: |
-    pip install pytest
-    pip install pytest-cov
-    pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+    pipenv run pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
   displayName: 'Test with pytest'
 
 - task: PublishTestResults@2
