@@ -1,6 +1,6 @@
 from .db import db
-from .Place import place
-from .Plan import plan
-from .User import user
+from .place import Place
+from .plan import Plan
+from .user import User
 
-__all__ = ["place", "plan", "user", "db"]
+__all__ = ["Place", "Plan", "User", "db"]

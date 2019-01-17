@@ -3,14 +3,14 @@ from marshmallow import Schema
 from marshmallow import fields
 from marshmallow import pre_load
 
-from .User import UserSchema
+from .user import userSchema
 
 
 class planSchema(Schema):
     id = fields.Int()
     name = fields.Str()
     user_id = fields.Int()
-    user = fields.Nested(UserSchema)
+    user = fields.Nested(userSchema)
     serialized = fields.Str()
     mapping = fields.Method("decode_mapping")
     created_at = fields.Date(dump_only=True)
