@@ -10,7 +10,7 @@ class User(db.Model):
     def update(self, first=None, last=None, email=None, id=None):
         if first is not None:
             self.first = first
-        
+
         if last is not None:
             self.last = last
 
