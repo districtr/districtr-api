@@ -5,7 +5,7 @@ from ..schemas import UserSchema
 
 bp = Blueprint("users", __name__)
 
-users_schema = UserSchema()
+users_schema = UserSchema(many=True)
 user_schema = UserSchema()
 
 
@@ -19,14 +19,14 @@ def list_users():
 @bp.route("/<int:id>", methods=["GET"])
 def get_user(id):
     user = User.query.get_or_404(id)
-    return jsonify(user_schema.dump(user).data)
+    return jsonify(user_schema.dump(user))
 
 
 @bp.route("/", methods=["POST"])
 def new_user():
     user_raw_json = request.get_json()
     user_data = user_schema.load(user_raw_json)
-    user = User(**user_data.data)
+    user = User(**user_data)
 
     db.session.add(user)
     db.session.commit()

@@ -1,12 +1,10 @@
 from flask import json
-from marshmallow import Schema
-from marshmallow import fields
-from marshmallow import pre_load
+from marshmallow import Schema, fields, pre_load
 
-from .User import UserSchema
+from .user import UserSchema
 
 
-class planSchema(Schema):
+class PlanSchema(Schema):
     id = fields.Int()
     name = fields.Str()
     user_id = fields.Int()

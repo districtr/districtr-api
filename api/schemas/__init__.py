@@ -1,4 +1,4 @@
-from .Plan import planSchema
-from .User import userSchema
+from .plan import PlanSchema
+from .user import UserSchema
 
-__all__ = ["plan", "user"]
+__all__ = ["PlanSchema", "UserSchema"]
