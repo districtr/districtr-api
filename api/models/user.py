@@ -6,3 +6,13 @@ class User(db.Model):
     first = db.Column(db.String(80), nullable=False)
     last = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(256), nullable=False)
+
+    def update(self, first=None, last=None, email=None, id=None):
+        if first is not None:
+            self.first = first
+        
+        if last is not None:
+            self.last = last
+
+        if email is not None:
+            self.email = email
