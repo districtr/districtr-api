@@ -20,7 +20,7 @@ steps:
 
 - script: |
     pip install pipenv
-    pipenv install --dev
+    pipenv install --dev --pre
   displayName: 'Install dependencies from Pipfile'
 
 - script: |
