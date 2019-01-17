@@ -13,6 +13,7 @@ marshmallow = "*"
 pytest = "*"
 black = "*"
 "flake8" = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.6"
