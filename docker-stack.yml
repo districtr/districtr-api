@@ -1,0 +1,30 @@
+version: "3"
+
+# This compose file is for deployment with `docker stack deploy`
+# The main difference between docker-compose.yml and this file is
+# that we create a volume on the host to persist the database.
+
+# We use the mggg/districtr-api:31 container here as an example.
+# When deploying, replace "31" with the tag of the build that you
+# want to deploy.
+
+services:
+  gis:
+    image: mdillon/postgis:11
+    ports:
+      - 5432:5432
+    deploy:
+      replicas: 1
+    environment:
+      POSTGRES_DB: "gis"
+      POSTGRES_PASSWORD: "mgggiskool"
+      POSTGRES_USER: "mggg"
+      ALLOW_IP_RANGE: "0.0.0.0/0"
+    volumes:
+      - /data/volumes/gis:/var/lib/postgresql
+  api:
+    image: mggg/districtr-api:31
+    ports:
+      - 3000:3000
+    deploy:
+      replicas: 2
