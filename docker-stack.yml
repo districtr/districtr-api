@@ -14,8 +14,6 @@ version: "3"
 services:
   gis:
     image: mdillon/postgis:11
-    ports:
-      - 5432:5432
     deploy:
       replicas: 1
     environment:
@@ -27,8 +25,16 @@ services:
       - /data/volumes/gis:/var/lib/postgresql
   api:
     image: mggg/districtr-api:31
+    environment:
+      POSTGRES_DB: "gis"
+      POSTGRES_PASSWORD: "mgggiskool"
+      POSTGRES_USER: "mggg"
+      POSTGRES_PORT: "5432"
+      POSTGRES_HOST: "gis"
     ports:
       - 3000:3000
+    depends_on:
+      - gis
     deploy:
       replicas: 2
     secrets:

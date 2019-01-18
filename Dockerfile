@@ -11,11 +11,12 @@ RUN python3 -m pip install pipenv
 
 # Install dependencies from Pipfile
 COPY Pipfile Pipfile.lock /app/
-RUN pipenv install --ignore-pipfile
+RUN pipenv install --deploy
 
 # Copy the app into the container
 COPY . /app
 ENV FLASK_APP api
 
-# Run gunicorn server in the pipenv environment:
-CMD ["pipenv", "run", "gunicorn", "-b", ":5000", "--access-logfile", "-", "--error-logfile", "-", "api:create_app()"]
+# Script to do database migrations and then run app:
+RUN chmod +x ./up.sh
+ENTRYPOINT [ "./up.sh" ]

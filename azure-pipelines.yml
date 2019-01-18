@@ -24,7 +24,7 @@ steps:
     displayName: "Install dependencies from Pipfile"
 
   - script: |
-      pipenv run flake8 . --max-line-length 88
+      pipenv run flake8 api --max-line-length 88
     displayName: "Run lint tests"
 
   - script: |
