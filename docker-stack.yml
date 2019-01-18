@@ -8,6 +8,9 @@ version: "3"
 # When deploying, replace "31" with the tag of the build that you
 # want to deploy.
 
+# You will also want to define a `secret_key` Docker secret for
+# the api service.
+
 services:
   gis:
     image: mdillon/postgis:11
@@ -28,3 +31,5 @@ services:
       - 3000:3000
     deploy:
       replicas: 2
+    secrets:
+      - secret_key
