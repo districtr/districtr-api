@@ -18,4 +18,4 @@ COPY . /app
 ENV FLASK_APP api
 
 # Run gunicorn server in the pipenv environment:
-CMD ["pipenv", "run", "guniorn", "-b", ":5000", "--access-logfile", "-", "--error-logfile", "-", "api:create_app()"]
+CMD ["pipenv", "run", "gunicorn", "-b", ":5000", "--access-logfile", "-", "--error-logfile", "-", "api:create_app()"]
