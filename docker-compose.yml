@@ -1,12 +1,13 @@
 version: "3"
 
+# Compose file for development
+
 services:
   gis:
     ports:
       - 5432:5432
-    image: mdillon/postgis
-    deploy:
-      replicas: 1
+    image: mdillon/postgis:11
+    restart: always
     environment:
       POSTGRES_DB: "gis"
       POSTGRES_PASSWORD: "mgggiskool"
