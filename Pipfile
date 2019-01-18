@@ -6,11 +6,17 @@ name = "pypi"
 [packages]
 flask = "*"
 flask-sqlalchemy = "*"
+flask-cors = "*"
+marshmallow = "*"
 
 [dev-packages]
 pytest = "*"
 black = "*"
 "flake8" = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true

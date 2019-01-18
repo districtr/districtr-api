@@ -43,9 +43,8 @@ def delete_user(id):
 
 @bp.route("/", methods=["POST"])
 def new_user():
-    user_raw_json = request.get_json()
-    user_data = user_schema.load(user_raw_json)
-    user = User(**user_data), 200
+    user_data = request.get_json()
+    user = user_schema.load(user_data)
 
     db.session.add(user)
     db.session.commit()
