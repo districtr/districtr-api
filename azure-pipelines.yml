@@ -10,7 +10,7 @@ pool:
   vmImage: "Ubuntu-16.04"
 
 variables:
-  imageName: "mggg/districtr-api:$(build.buildId)"
+  imageName: "$(dockerId)/districtr-api:$(build.buildId)"
 
 steps:
   - task: UsePythonVersion@0
