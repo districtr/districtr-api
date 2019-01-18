@@ -42,6 +42,6 @@ steps:
 
   - script: |
       echo $(dockerPassword) | docker login -u $(dockerId) --password-stdin
-      docker push $(dockerId)/$(imageName)
+      docker push $(imageName)
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     displayName: "Push Docker image"
