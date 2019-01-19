@@ -1,4 +1,4 @@
-version: "3"
+version: "3.5"
 
 # This compose file is for deployment with `docker stack deploy`
 # The main difference between docker-compose.yml and this file is
@@ -8,8 +8,8 @@ version: "3"
 # When deploying, replace "31" with the tag of the build that you
 # want to deploy.
 
-# You will also want to define a `secret_key` Docker secret for
-# the api service.
+# You will need to provide files `secret_key`, `gis_user`, and
+# `gis_password` holding the secrets needed to run the api.
 
 services:
   gis:
@@ -18,19 +18,18 @@ services:
       replicas: 1
     environment:
       POSTGRES_DB: "gis"
-      # Obviously you'll want to change this too, or use secrets
-      POSTGRES_PASSWORD: "mgggiskool"
-      POSTGRES_USER: "mggg"
+      POSTGRES_PASSWORD_FILE: "/run/secrets/gis_password"
+      POSTGRES_USER_FILE: "/run/secrets/gis_user"
       ALLOW_IP_RANGE: "0.0.0.0/0"
     volumes:
       - /data/volumes/gis:/var/lib/postgresql
+    secrets:
+      - gis_user
+      - gis_password
   api:
     image: mggg/districtr-api:31
     environment:
       POSTGRES_DB: "gis"
-      # Obviously you'll want to change this too, or use secrets
-      POSTGRES_PASSWORD: "mgggiskool"
-      POSTGRES_USER: "mggg"
       POSTGRES_PORT: "5432"
       POSTGRES_HOST: "gis"
     ports:
@@ -39,3 +38,15 @@ services:
       - gis
     deploy:
       replicas: 2
+    secrets:
+      - secret_key
+      - gis_user
+      - gis_password
+
+secrets:
+  secret_key:
+    file: ./secret_key
+  gis_user:
+    file: ./gis_user
+  gis_password:
+    file: ./gis_password
