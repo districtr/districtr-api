@@ -5,9 +5,7 @@ version: "3"
 services:
   gis:
     ports:
-      # Mapping to external port 25432 to avoid colliding with a Postgres installation
-      # on the host system.
-      - 25432:5432
+      - "5432:5432"
     image: mdillon/postgis:11
     restart: always
     environment:
@@ -15,15 +13,15 @@ services:
       POSTGRES_PASSWORD: "mgggiskool"
       POSTGRES_USER: "mggg"
       ALLOW_IP_RANGE: "0.0.0.0/0"
-  # api:
-  #   image: mggg/districtr-api
-  #   environment:
-  #     POSTGRES_DB: "gis"
-  #     POSTGRES_PASSWORD: "mgggiskool"
-  #     POSTGRES_USER: "mggg"
-  #     POSTGRES_PORT: "5432"
-  #     POSTGRES_HOST: "gis"
-  #   ports:
-  #     - 3000:3000
-  #   depends_on:
-  #     - gis
+  api:
+    image: mggg/districtr-api
+    environment:
+      POSTGRES_DB: "gis"
+      POSTGRES_PASSWORD: "mgggiskool"
+      POSTGRES_USER: "mggg"
+      POSTGRES_PORT: "5432"
+      POSTGRES_HOST: "gis"
+    ports:
+      - 3000:3000
+    depends_on:
+      - gis
