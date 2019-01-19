@@ -18,6 +18,7 @@ services:
       replicas: 1
     environment:
       POSTGRES_DB: "gis"
+      # Obviously you'll want to change this too, or use secrets
       POSTGRES_PASSWORD: "mgggiskool"
       POSTGRES_USER: "mggg"
       ALLOW_IP_RANGE: "0.0.0.0/0"
@@ -27,15 +28,14 @@ services:
     image: mggg/districtr-api:31
     environment:
       POSTGRES_DB: "gis"
+      # Obviously you'll want to change this too, or use secrets
       POSTGRES_PASSWORD: "mgggiskool"
       POSTGRES_USER: "mggg"
       POSTGRES_PORT: "5432"
       POSTGRES_HOST: "gis"
     ports:
-      - 3000:3000
+      - "3000:3000"
     depends_on:
       - gis
     deploy:
       replicas: 2
-    secrets:
-      - secret_key

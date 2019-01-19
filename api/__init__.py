@@ -21,8 +21,6 @@ def create_app(test_config=None):
     app.register_blueprint(plans, url_prefix="/plans")
     app.register_blueprint(users, url_prefix="/users")
 
-    db.create_all(app=app)
-
     @app.route("/")
     def hello():
         return "Hello, world!"

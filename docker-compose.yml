@@ -5,9 +5,7 @@ version: "3"
 services:
   gis:
     ports:
-      # Mapping to external port 25432 to avoid colliding with a Postgres installation
-      # on the host system.
-      - 25432:5432
+      - "5432:5432"
     image: mdillon/postgis:11
     restart: always
     environment:

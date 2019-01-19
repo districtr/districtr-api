@@ -1,15 +1,15 @@
-"""empty message
+"""Initialize place table (plans and users are already there)
 
-Revision ID: be20d31316ea
-Revises: 
-Create Date: 2019-01-18 13:26:44.066173
+Revision ID: 500eb10c8e42
+Revises:
+Create Date: 2019-01-18 18:50:24.638823
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "be20d31316ea"
+revision = "500eb10c8e42"
 down_revision = None
 branch_labels = None
 depends_on = None
