@@ -2,8 +2,9 @@ from flask import Blueprint, jsonify, request
 
 from ..auth import admin_only, authenticate, get_current_user
 from ..exceptions import ApiException
-from ..models import User, db
+from ..models import Plan, User, db
 from ..schemas import UserSchema
+from .plans import plans_schema
 
 bp = Blueprint("users", __name__)
 
@@ -22,6 +23,19 @@ def list_users():
 def get_user(id):
     user = User.query.get_or_404(id)
     return jsonify(user_schema.dump(user)), 200
+
+
+@bp.route("/<int:user_id>/plans", methods=["GET"])
+def get_users_plans(user_id):
+    plans = User.query.get_or_404(user_id).plans
+    return plans_schema.dump(plans)
+
+
+@bp.route("/<int:user_id>/plans/<int:plan_id>", methods=["GET"])
+def get_users_plan(user_id, plan_id):
+    plan = Plan.get_or_404(plan_id)
+    if plan.user_id != user_id:
+        raise ApiException("Resource not found", 404)
 
 
 @bp.route("/<int:id>", methods=["POST", "PUT", "PATCH"])
