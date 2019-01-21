@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 
-from ..auth import admin_only
+from ..auth import admin_only, get_current_user
+from ..exceptions import ApiException
 from ..models import User, db
 from ..schemas import UserSchema
 
@@ -37,6 +38,10 @@ def update_user(id):
 @admin_only
 def delete_user(id):
     user = User.query.get_or_404(id)
+
+    if user.id == get_current_user().id:
+        return ApiException("A user cannot delete itself.", 400)
+
     db.session.delete(user)
     db.session.commit()
 
@@ -44,6 +49,7 @@ def delete_user(id):
 
 
 @bp.route("/", methods=["POST"])
+@admin_only
 def new_user():
     user_data = request.get_json()
     user = user_schema.load(user_data)

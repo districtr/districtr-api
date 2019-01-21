@@ -12,7 +12,6 @@ token_data_schema = UserSchema(only=("id", "first", "last", "email"))
 
 def create_bearer_token(user):
     serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
-    print(token_data_schema.dump(user))
     return serializer.dumps(token_data_schema.dump(user))
 
 

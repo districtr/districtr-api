@@ -24,3 +24,6 @@ class Plan(db.Model):
         if serialized is not None:
             self.serialized = serialized
         self.modified_at = datetime.utcnow()
+
+    def belongs_to(self, user):
+        return self.user_id == user.id or user.is_admin()

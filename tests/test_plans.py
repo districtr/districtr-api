@@ -24,8 +24,18 @@ def test_creating_a_plan_requires_authentication(client, plan_record):
     assert response.status_code == 403
 
 
+def test_deleting_a_plan_requires_authentication(client):
+    response = client.delete("/plans/1")
+    assert response.status_code == 403
+
+
+def test_delete_plan(client, auth_headers):
+    response = client.delete("/plans/1", headers=auth_headers)
+    assert response.status_code == 204
+    assert client.get("/plans/1").status_code == 404
+
+
 def test_can_get_single_plan_by_id(client, plan_record):
-    print(plan_record)
     expected = {
         "id": 1,
         "name": plan_record["name"],

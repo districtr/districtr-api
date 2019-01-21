@@ -48,7 +48,7 @@ def update_plan(id):
     plan = Plan.query.get_or_404(id)
 
     user = get_current_user()
-    if plan.user_id != user.id and not user.is_admin():
+    if not plan.belongs_to(user):
         raise ApiException("You are not authorized to edit this resource.", 403)
 
     data = request.get_json()
@@ -66,6 +66,21 @@ def overwrite_plan(id):
 
     data = request.get_json()
     plan.update(name=data["name"], serialized=json.dump(data["serialized"]))
+    db.session.commit()
+
+    return "", 204
+
+
+@bp.route("/<int:id>", methods=["DELETE"])
+@authenticate
+def delete_plan(id):
+    plan = Plan.query.get_or_404(id)
+
+    user = get_current_user()
+    if not plan.belongs_to(user):
+        raise ApiException("You are not authorized to delete this resource.", 403)
+
+    db.session.delete(plan)
     db.session.commit()
 
     return "", 204
