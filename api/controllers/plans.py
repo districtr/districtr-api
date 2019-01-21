@@ -1,23 +1,28 @@
 from flask import Blueprint, json, jsonify, request
 
-from ..models import Plan, User, db
+from ..auth import authenticate, get_current_user
+from ..exceptions import ApiException
+from ..models import Plan, db
 from ..schemas import PlanSchema
 
 bp = Blueprint("plans", __name__)
 
 plans_schema = PlanSchema(only=("id", "name", "user"), many=True)
-plan_schema = PlanSchema(only=("id", "name", "user", "mapping"))
+plan_schema = PlanSchema(only=("id", "name", "user", "serialized"))
 
 
 @bp.route("/", methods=["POST"])
+@authenticate
 def new_plan():
     data = request.get_json()
+
     name = data["name"]
     serialized = json.dumps(data["mapping"])
+    place_id = data["place_id"]
 
-    user = User.query.get(data["user_id"])
-
-    plan = Plan(name=name, serialized=serialized, user=user)
+    plan = Plan(
+        name=name, serialized=serialized, place_id=place_id, user=get_current_user()
+    )
 
     db.session.add(plan)
     db.session.commit()
@@ -26,6 +31,7 @@ def new_plan():
 
 @bp.route("/", methods=["GET"])
 def list_plans():
+    """List all plans."""
     plans = Plan.query.all()
     records = plans_schema.dump(plans)
     return jsonify(records)
@@ -38,8 +44,13 @@ def get_plan(id):
 
 
 @bp.route("/<int:id>", methods=["PATCH"])
+@authenticate
 def update_plan(id):
     plan = Plan.query.get_or_404(id)
+
+    user = get_current_user()
+    if not plan.belongs_to(user):
+        raise ApiException("You are not authorized to edit this resource.", 403)
 
     data = request.get_json()
     plan.update(
@@ -56,6 +67,21 @@ def overwrite_plan(id):
 
     data = request.get_json()
     plan.update(name=data["name"], serialized=json.dump(data["serialized"]))
+    db.session.commit()
+
+    return "", 204
+
+
+@bp.route("/<int:id>", methods=["DELETE"])
+@authenticate
+def delete_plan(id):
+    plan = Plan.query.get_or_404(id)
+
+    user = get_current_user()
+    if not plan.belongs_to(user):
+        raise ApiException("You are not authorized to delete this resource.", 403)
+
+    db.session.delete(plan)
     db.session.commit()
 
     return "", 204

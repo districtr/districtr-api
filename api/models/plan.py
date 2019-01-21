@@ -6,11 +6,14 @@ from .db import db
 class Plan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    user = db.relationship("User", backref=db.backref("plans", lazy="dynamic"))
-    serialized = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     modified_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"), nullable=False)
+
+    # The JSON string of the { unit id: district number } mapping.
+    serialized = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
         return "<Plan {}>".format(self.name)
@@ -21,3 +24,6 @@ class Plan(db.Model):
         if serialized is not None:
             self.serialized = serialized
         self.modified_at = datetime.utcnow()
+
+    def belongs_to(self, user):
+        return self.user_id == user.id or user.is_admin()

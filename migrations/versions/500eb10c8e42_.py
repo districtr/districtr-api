@@ -1,4 +1,4 @@
-"""Initialize place table (plans and users are already there)
+"""Create place table
 
 Revision ID: 500eb10c8e42
 Revises:
