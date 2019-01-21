@@ -1,50 +1,48 @@
-import pytest
-
 from api.schemas import PlanSchema
 
 
-@pytest.fixture
-def client_with_plan(client_with_user, plan_record):
-    client_with_user.post("/plans/", json=plan_record)
-    return client_with_user
-
-
-@pytest.fixture
-def plan_record():
-    return {"id": 1, "name": "My plan", "mapping": {"1": 0}, "user_id": 1}
-
-
-def test_create_plan(client, plan_record):
-    response = client.post("/plans/", json=plan_record)
+def test_create_plan(client, plan_record, auth_headers):
+    response = client.post("/plans/", json=plan_record, headers=auth_headers)
     assert response.status_code == 201
 
 
-def test_created_plan_shows_up_in_list(client, plan_record):
-    client.post("/plans/", json=plan_record)
+def test_created_plan_shows_up_in_list(client, auth_headers, plan_record):
+    number_of_plans = len(client.get("/plans/").get_json())
+    client.post("/plans/", json=plan_record, headers=auth_headers)
     response = client.get("/plans/")
-    assert len(response.get_json()) == 1
+
+    assert len(response.get_json()) == number_of_plans + 1
 
 
-def test_creating_single_plan_returns_its_id(client, plan_record):
-    response = client.post("/plans/", json=plan_record)
+def test_creating_single_plan_returns_its_id(client, auth_headers, plan_record):
+    response = client.post("/plans/", json=plan_record, headers=auth_headers)
     assert "id" in response.get_json()
 
 
-def test_can_get_single_plan_by_id(client_with_plan, plan_record):
+def test_creating_a_plan_requires_authentication(client, plan_record):
+    response = client.post("/plans/", json=plan_record)
+    assert response.status_code == 403
+
+
+def test_can_get_single_plan_by_id(client, plan_record):
+    print(plan_record)
     expected = {
-        "id": plan_record["id"],
+        "id": 1,
         "name": plan_record["name"],
         "mapping": plan_record["mapping"],
-        "user": client_with_plan.get(
-            "/users/{}".format(plan_record["user_id"])
-        ).get_json(),
+        "user": {
+            "id": 1,
+            "first": "Max",
+            "last": "Hully",
+            "email": "max.hully@gmail.com",
+        },
     }
-    response = client_with_plan.get("/plans/{}".format(plan_record["id"]))
+    response = client.get("/plans/1")
     assert response.get_json() == expected
 
 
-def test_single_plan_records_have_users(client_with_plan):
-    response = client_with_plan.get("/plans/1")
+def test_single_plan_records_have_users(client):
+    response = client.get("/plans/1")
     assert "user" in response.get_json()
 
 

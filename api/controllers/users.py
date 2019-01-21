@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 
+from ..auth import admin_only
 from ..models import User, db
 from ..schemas import UserSchema
 
@@ -33,6 +34,7 @@ def update_user(id):
 
 
 @bp.route("/<int:id>", methods=["DELETE"])
+@admin_only
 def delete_user(id):
     user = User.query.get_or_404(id)
     db.session.delete(user)

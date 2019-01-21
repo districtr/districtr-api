@@ -1,23 +1,24 @@
 from flask import Blueprint, json, jsonify, request
 
-from ..models import Plan, User, db
+from ..auth import authenticate, get_current_user
+from ..models import Plan, db
 from ..schemas import PlanSchema
 
 bp = Blueprint("plans", __name__)
 
 plans_schema = PlanSchema(only=("id", "name", "user"), many=True)
-plan_schema = PlanSchema(only=("id", "name", "user", "mapping"))
+plan_schema = PlanSchema(only=("id", "name", "user", "serialized"))
 
 
 @bp.route("/", methods=["POST"])
+@authenticate
 def new_plan():
     data = request.get_json()
+
     name = data["name"]
     serialized = json.dumps(data["mapping"])
 
-    user = User.query.get(data["user_id"])
-
-    plan = Plan(name=name, serialized=serialized, user=user)
+    plan = Plan(name=name, serialized=serialized, user=get_current_user())
 
     db.session.add(plan)
     db.session.commit()

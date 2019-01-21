@@ -9,7 +9,7 @@ class Plan(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     modified_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
 
     # The JSON string of the { unit id: district number } mapping.

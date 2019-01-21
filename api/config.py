@@ -14,7 +14,7 @@ def secret(name, default=None, mode="r"):
 
 
 def environment(name, default=None):
-    return (os.environ.get(name, default),)
+    return os.environ.get(name, default)
 
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
