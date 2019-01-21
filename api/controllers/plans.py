@@ -31,6 +31,7 @@ def new_plan():
 
 @bp.route("/", methods=["GET"])
 def list_plans():
+    """List all plans."""
     plans = Plan.query.all()
     records = plans_schema.dump(plans)
     return jsonify(records)

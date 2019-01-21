@@ -17,5 +17,18 @@ def test_create_new_user(client, auth_headers):
     assert response.status_code == 201
 
 
+def test_create_new_user_requires_admin_role(client):
+    response = client.post(
+        "/users/",
+        json={
+            "first": "User",
+            "last": "Name",
+            "email": "user@example.com",
+            "roles": ["user", "admin"],
+        },
+    )
+    assert response.status_code == 403
+
+
 # def test_deleting_a_user_requires_admin_role(client):
 # response = client.delete("/users/")

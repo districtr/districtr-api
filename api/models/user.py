@@ -34,3 +34,6 @@ class User(db.Model):
 
     def is_admin(self):
         return any(role.name == "admin" for role in self.roles)
+
+    def belongs_to(self, user):
+        return user.id == self.id or user.is_admin()

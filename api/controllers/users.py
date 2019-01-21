@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from ..auth import admin_only, get_current_user
+from ..auth import admin_only, authenticate, get_current_user
 from ..exceptions import ApiException
 from ..models import User, db
 from ..schemas import UserSchema
@@ -25,8 +25,13 @@ def get_user(id):
 
 
 @bp.route("/<int:id>", methods=["POST", "PUT", "PATCH"])
+@authenticate
 def update_user(id):
     user = User.query.get_or_404(id)
+
+    if not user.belongs_to(get_current_user()):
+        raise ApiException("You are not authorized to edit this resource.", 403)
+
     data = request.get_json()
     user.update(**data)
     db.session.commit()
