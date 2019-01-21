@@ -15,6 +15,8 @@ class PlanSchema(Schema):
         UserSchema(only=("id", "first", "last", "email")), dump_only=True
     )
 
+    place_id = fields.Int()
+
     serialized = fields.Str()
 
     @post_dump

@@ -2,7 +2,7 @@ import pytest
 
 from api import create_app
 from api.auth import create_bearer_token
-from api.models import Role, User, db
+from api.models import Place, Role, User, db
 from api.schemas import PlanSchema
 
 
@@ -28,6 +28,9 @@ def app(user, plan_record):
         user.roles = [admin_role, user_role]
 
         db.session.add(user)
+
+        place = Place(name="Lowell, MA", description="A town")
+        db.session.add(place)
 
         plan = PlanSchema().load(plan_record)
         plan.user = user
@@ -55,7 +58,7 @@ def user(user_record):
 
 @pytest.fixture
 def plan_record():
-    return {"name": "My plan", "mapping": {"1": 0}}
+    return {"name": "My plan", "mapping": {"1": 0}, "place_id": 1}
 
 
 @pytest.fixture

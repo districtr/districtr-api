@@ -1,6 +1,7 @@
 from flask import Blueprint, json, jsonify, request
 
 from ..auth import authenticate, get_current_user
+from ..exceptions import ApiException
 from ..models import Plan, db
 from ..schemas import PlanSchema
 
@@ -17,8 +18,11 @@ def new_plan():
 
     name = data["name"]
     serialized = json.dumps(data["mapping"])
+    place_id = data["place_id"]
 
-    plan = Plan(name=name, serialized=serialized, user=get_current_user())
+    plan = Plan(
+        name=name, serialized=serialized, place_id=place_id, user=get_current_user()
+    )
 
     db.session.add(plan)
     db.session.commit()
@@ -39,8 +43,13 @@ def get_plan(id):
 
 
 @bp.route("/<int:id>", methods=["PATCH"])
+@authenticate
 def update_plan(id):
     plan = Plan.query.get_or_404(id)
+
+    user = get_current_user()
+    if plan.user_id != user.id and not user.is_admin():
+        raise ApiException("You are not authorized to edit this resource.", 403)
 
     data = request.get_json()
     plan.update(
