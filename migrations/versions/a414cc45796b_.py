@@ -1,4 +1,4 @@
-"""empty message
+"""Create user and plan tables
 
 Revision ID: a414cc45796b
 Revises: 500eb10c8e42
