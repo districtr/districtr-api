@@ -50,7 +50,7 @@ def delete_user(id):
     db.session.delete(user)
     db.session.commit()
 
-    return "", 200
+    return "", 204
 
 
 @bp.route("/", methods=["POST"])
