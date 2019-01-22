@@ -5,7 +5,7 @@ import warnings
 def secret(name, default=None, mode="r"):
     try:
         with open("/run/secrets/{}".format(name), mode) as f:
-            return f.read()
+            return f.read().strip()
     except FileNotFoundError:
         warnings.warn(
             "Using default for secret {}. Never do this in production!".format(name)

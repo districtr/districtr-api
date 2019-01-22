@@ -25,11 +25,14 @@ services:
       - gis_user
       - gis_password
   api:
-    image: mggg/districtr-api:DOCKER_IMAGE_TAG
+    image: mggg/districtr-api:51
     environment:
       POSTGRES_DB: "gis"
       POSTGRES_PORT: "5432"
       POSTGRES_HOST: "gis"
+      VIRTUAL_HOST: districtr.mggg.org
+      LETSENCRYPT_HOST: districtr.mggg.org
+      LETSENCRYPT_EMAIL: max.hully@gmail.com
     ports:
       - "3000:3000"
     depends_on:
@@ -40,6 +43,29 @@ services:
       - secret_key
       - gis_user
       - gis_password
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    deploy:
+      replicas: 1
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - vhostd:/etc/nginx/vhost.d
+      - dhparam:/etc/nginx/dhparam
+      - html:/usr/share/nginx/html
+  letsencrypt-nginx-proxy-companion:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    deploy:
+      replicas: 1
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - vhostd:/etc/nginx/vhost.d
+      - dhparam:/etc/nginx/dhparam
+      - html:/usr/share/nginx/html
 
 secrets:
   secret_key:
@@ -48,3 +74,9 @@ secrets:
     file: /data/ops/secrets/gis_user
   gis_password:
     file: /data/ops/secrets/gis_password
+
+volumes:
+  certs:
+  vhostd:
+  html:
+  dhparam:
