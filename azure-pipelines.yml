@@ -48,5 +48,5 @@ steps:
 
   - task: PublishPipelineArtifact@0
     inputs:
-      artifactName: 'dockerStack'
-      targetPath: './docker-stack.yml'
+      artifactName: 'Source'
+      targetPath: '.'
