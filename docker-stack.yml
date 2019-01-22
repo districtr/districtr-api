@@ -25,7 +25,7 @@ services:
       - gis_user
       - gis_password
   api:
-    image: mggg/districtr-api:${API_IMAGE_TAG}
+    image: mggg/districtr-api:API_IMAGE_TAG
     environment:
       POSTGRES_DB: gis
       POSTGRES_PORT: 5432
