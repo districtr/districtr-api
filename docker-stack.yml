@@ -25,11 +25,11 @@ services:
       - gis_user
       - gis_password
   api:
-    image: mggg/districtr-api:51
+    image: mggg/districtr-api:${API_IMAGE_TAG}
     environment:
-      POSTGRES_DB: "gis"
-      POSTGRES_PORT: "5432"
-      POSTGRES_HOST: "gis"
+      POSTGRES_DB: gis
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: gis
       VIRTUAL_HOST: districtr.mggg.org
       LETSENCRYPT_HOST: districtr.mggg.org
       LETSENCRYPT_EMAIL: max.hully@gmail.com
@@ -66,6 +66,8 @@ services:
       - vhostd:/etc/nginx/vhost.d
       - dhparam:/etc/nginx/dhparam
       - html:/usr/share/nginx/html
+    environment:
+      NGINX_PROXY_CONTAINER: nginx-proxy
 
 secrets:
   secret_key:
