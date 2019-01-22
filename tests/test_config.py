@@ -2,7 +2,15 @@ import os
 import pathlib
 import tempfile
 
-from api.config import environment, secret
+import pytest
+
+from api.config import (
+    DefaultSecretWarning,
+    database_uri,
+    environment,
+    get_database_uri_from_environment,
+    secret,
+)
 
 
 class TestSecret:
@@ -20,6 +28,11 @@ class TestSecret:
         value = secret("missing_secret", default=default, secrets_path="./")
         assert value == default
 
+    def test_secret_warns_for_default(self):
+        default = "my_default_secret"
+        with pytest.warns(DefaultSecretWarning):
+            secret("missing_secret", default=default, secrets_path="./")
+
 
 class TestEnvironment:
     def test_environment(self):
@@ -34,3 +47,18 @@ class TestEnvironment:
         assert (
             environment("MISSING_ENV_VAR", default="default_value") == "default_value"
         )
+
+
+def test_database_uri():
+    uri = database_uri("mggg", "mgggiskool", "gis", 5432, "gis")
+    assert uri == "postgresql://mggg:mgggiskool@gis:5432/gis"
+
+
+def test_get_database_uri_from_environment():
+    os.environ["POSTGRES_HOST"] = "localhost"
+    os.environ["POSTGRES_DB"] = "my_db"
+    os.environ["POSTGRES_USER"] = "user"
+    os.environ["POSTGRES_PASSWORD"] = "password123"
+    os.environ["POSTGRES_PORT"] = "25432"
+    uri = get_database_uri_from_environment()
+    assert uri == "postgresql://user:password123@localhost:25432/my_db"
