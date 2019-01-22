@@ -35,7 +35,7 @@ steps:
     condition: succeededOrFailed()
     inputs:
       testResultsFiles: "**/test-*.xml"
-      testRunTitle: "Publish test results for Python $(python.version)"
+      testRunTitle: "Publish test results"
 
   - script: docker build -f Dockerfile -t $(imageName) .
     displayName: "Build Docker image"
@@ -45,3 +45,8 @@ steps:
       docker push $(imageName)
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     displayName: "Push Docker image"
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'dockerStack'
+      targetPath: './docker-stack.yml'
