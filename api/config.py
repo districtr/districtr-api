@@ -1,10 +1,11 @@
 import os
+import pathlib
 import warnings
 
 
-def secret(name, default=None, mode="r"):
+def secret(name, default=None, mode="r", secrets_path="/run/secrets/"):
     try:
-        with open("/run/secrets/{}".format(name), mode) as f:
+        with open(pathlib.Path(secrets_path) / name, mode) as f:
             return f.read().strip()
     except FileNotFoundError:
         warnings.warn(
