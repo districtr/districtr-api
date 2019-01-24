@@ -29,7 +29,7 @@ def get_database_uri_from_environment():
         password=secret("gis_password", environment("POSTGRES_PASSWORD", "mgggiskool")),
         db=environment("POSTGRES_DB", "gis"),
         port=environment("POSTGRES_PORT", 5432),
-        host=environment("POSTGRES_HOST", "localhost"),
+        host=environment("POSTGRES_HOST", "gis"),
     )
 
 
