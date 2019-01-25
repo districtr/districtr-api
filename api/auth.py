@@ -1,22 +1,41 @@
 import functools
 
 from flask import current_app, g, request
-from itsdangerous import JSONWebSignatureSerializer
+from itsdangerous import (JSONWebSignatureSerializer,
+                          TimedJSONWebSignatureSerializer)
 
-from .exceptions import ApiException
+from .exceptions import Unauthenticated, Unauthorized
 from .models import User
 from .schemas import UserSchema
 
 token_data_schema = UserSchema(only=("id", "first", "last", "email"))
 
+timed_serializer = TimedJSONWebSignatureSerializer(
+    current_app.config["SECRET_KEY"], expires_in=1800
+)
+serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
+
+
+def exchange_signin_token_for_bearer_token(signin_token):
+    serialized_user = timed_serializer.loads(signin_token)
+    return serializer.dumps(serialized_user)
+
+
+def create_signin_token(user):
+    """Creates a timed JWT. The user agent (e.g. front-end API client) can exchange
+    this token for a Bearer token that doesn't expire. The user agent must store the
+    Bearer token somewhere (e.g. localStorage)."""
+    return timed_serializer.dumps(token_data_schema.dump(user))
+
 
 def create_bearer_token(user):
-    serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
     return serializer.dumps(token_data_schema.dump(user))
 
 
 def get_bearer_token(header):
-    # The header will be of the form "Bearer {token}" or "JWT {token}"
+    """Extracts the token from a header of the form "Bearer {token}" or
+    "JWT {token}"
+    """
     if not header:
         return None
     header_parts = header.split(" ")
@@ -31,7 +50,6 @@ def get_current_user_from_request(request):
     if not token:
         return None
 
-    serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
     token_data = serializer.loads(token)
 
     return User.query.get(token_data["id"])
@@ -49,7 +67,7 @@ def authenticate(controller):
     @functools.wraps(controller)
     def wrapper(*args, **kwargs):
         if get_current_user() is None:
-            raise ApiException("This action requires authentication.", 403)
+            raise Unauthenticated()
         return controller(*args, **kwargs)
 
     return wrapper
@@ -60,7 +78,7 @@ def admin_only(controller):
     def wrapper(*args, **kwargs):
         user = get_current_user()
         if user is None or not user.is_admin():
-            raise ApiException("This action requires a more privileged role.", 403)
+            raise Unauthorized()
         return controller(*args, **kwargs)
 
     return wrapper
