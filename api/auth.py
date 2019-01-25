@@ -12,12 +12,12 @@ token_data_schema = UserSchema(only=("id", "first", "last", "email", "roles"))
 
 
 def exchange_signin_token_for_bearer_token(signin_token):
-    serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
     timed_serializer = TimedJSONWebSignatureSerializer(
         current_app.config["SECRET_KEY"], expires_in=1800
     )
 
     serialized_user = timed_serializer.loads(signin_token)
+    serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
     return serializer.dumps(serialized_user)
 
 

@@ -71,7 +71,7 @@ def delete_user(id):
 @admin_only
 def new_user():
     user_data = request.get_json()
-    user = user_schema.load(user_data)
+    user = User.from_schema_load(user_schema.load(user_data))
 
     db.session.add(user)
     db.session.commit()

@@ -25,8 +25,8 @@ def database_uri(user, password, db, port, host, driver="postgresql"):
 
 def get_database_uri_from_environment():
     return database_uri(
-        user=secret("gis_user", environment("POSTGRES_USER", "mggg")),
-        password=secret("gis_password", environment("POSTGRES_PASSWORD", "mgggiskool")),
+        user=environment("POSTGRES_USER", "mggg"),
+        password=environment("POSTGRES_PASSWORD", "mgggiskool"),
         db=environment("POSTGRES_DB", "gis"),
         port=environment("POSTGRES_PORT", 5432),
         host=environment("POSTGRES_HOST", "gis"),

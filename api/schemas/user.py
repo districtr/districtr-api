@@ -1,7 +1,5 @@
-from marshmallow import Schema, fields, post_dump, post_load, pre_load
+from marshmallow import Schema, fields, post_dump, pre_load
 from marshmallow.validate import OneOf
-
-from ..models import Role, User
 
 
 class RoleSchema(Schema):
@@ -11,10 +9,6 @@ class RoleSchema(Schema):
     @post_dump
     def just_return_name(self, data):
         return data["name"]
-
-    @post_load
-    def find_role(self, data):
-        return Role.query.filter_by(name=data["name"]).first()
 
 
 class UserSchema(Schema):
@@ -31,7 +25,3 @@ class UserSchema(Schema):
 
         data["roles"] = [{"name": role} for role in data["roles"]]
         return data
-
-    @post_load
-    def create_user(self, data):
-        return User(**data)

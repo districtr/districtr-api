@@ -1,3 +1,6 @@
+from api.schemas.user import UserSchema
+
+
 def test_can_list_users(client):
     response = client.get("/users/")
     assert len(response.get_json()) >= 1
@@ -41,6 +44,7 @@ def test_deleting_a_user_requires_admin_role(client, admin_headers):
         },
         headers=admin_headers,
     )
+    print(response)
     user_id = response.get_json()["id"]
 
     # Try to delete without auth headers
@@ -51,3 +55,14 @@ def test_deleting_a_user_requires_admin_role(client, admin_headers):
         "/users/{}".format(user_id), headers=admin_headers
     )
     assert deletion_response.status_code == 204
+
+
+def test_user_schema_has_user_role_by_default(app):
+    with app.app_context():
+        schema = UserSchema()
+
+        user = schema.load(
+            {"first": "Emmy", "last": "Noether", "email": "emmy@brynmawr.edu"}
+        )
+
+    assert user["roles"] == [{"name": "user"}]
