@@ -39,12 +39,12 @@ class Unauthenticated(AuthException):
 
 class Unauthorized(AuthException):
     def __init__(self):
-        super().__init__(error="insufficient_scope", status=403)
+        super().__init__(error='"insufficient_scope"', status=403)
 
 
 class InvalidToken(AuthException):
     def __init__(self):
-        super().__init__(error="invalid_token", status=401)
+        super().__init__(error='"invalid_token"', status=401)
 
 
 def not_found(error):

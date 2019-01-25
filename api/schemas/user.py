@@ -26,6 +26,9 @@ class UserSchema(Schema):
 
     @pre_load
     def turn_strings_into_roles(self, data):
+        if "roles" not in data:
+            data["roles"] = ["user"]
+
         data["roles"] = [{"name": role} for role in data["roles"]]
         return data
 
