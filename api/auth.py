@@ -66,7 +66,9 @@ def load_token_data(request):
 @gcache
 def get_current_user():
     user_data = load_token_data(request)
-    user = User.query.get(user_data["id"])
+    user = None
+    if user_data:
+        user = User.query.get(user_data["id"])
     return user
 
 
