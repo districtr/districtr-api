@@ -66,3 +66,13 @@ def test_user_schema_has_user_role_by_default(app):
         )
 
     assert user["roles"] == [{"name": "user"}]
+
+
+def test_emails_must_be_unique(client, admin_headers):
+    response = client.post(
+        "/users/",
+        json={"first": "Mac", "last": "Sully", "email": "max.hully@gmail.com"},
+        headers=admin_headers,
+    )
+
+    assert response.status_code == 409

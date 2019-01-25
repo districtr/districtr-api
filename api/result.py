@@ -2,7 +2,7 @@ from flask import Response, json
 
 
 class ApiResult:
-    def __init__(self, value, status=200, headers=None):
+    def __init__(self, value="", status=200, headers=None):
         self.value = value
         self.status = status
         self.headers = headers
