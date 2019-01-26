@@ -39,4 +39,5 @@ class DefaultSecretWarning(Warning):
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = get_database_uri_from_environment()
-SECRET_KEY = secret("secret_key", default="my_secret_key", mode="rb")
+SECRET_KEY = secret("api-secret", default="my_secret_key", mode="rb")
+SENDGRID_API_KEY = environment("SENDGRID_API_KEY", None)

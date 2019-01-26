@@ -1,6 +1,7 @@
-from flask import Blueprint, request
+from flask import Blueprint, current_app, request
 
 from ..auth import create_signin_token
+from ..email import send_email
 from ..result import ApiResult
 from ..schemas import UserSchema
 from .users import create_user
@@ -12,7 +13,10 @@ registration_schema = UserSchema(only=("first", "last", "email"))
 
 
 def send_sign_in_email(email, token):
-    return
+    link = "https://districtr.org/signin?token={}".format(token)
+    template = current_app.jinja_env.get_template("signin_email.html")
+    content = template.render(link=link)
+    return send_email("sign.in@districtr.org", email, "Sign in to Districtr", content)
 
 
 @bp.route("/", methods=["POST"])
