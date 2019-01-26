@@ -7,7 +7,12 @@ class Role(db.Model):
 
     @classmethod
     def by_name(cls, name):
-        return Role.query.filter_by(name=name).first()
+        if name not in {"user", "admin"}:
+            raise ValueError
+        role = Role.query.filter_by(name=name).first()
+        if not role:
+            role = Role(name=name)
+        return role
 
 
 roles = db.Table(

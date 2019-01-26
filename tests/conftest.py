@@ -7,6 +7,22 @@ from api.schemas import PlanSchema
 
 
 @pytest.fixture
+def app_without_roles(user, plan_record):
+    app = create_app(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+            "SECRET_KEY": b"my_secret_key",
+        }
+    )
+
+    with app.app_context():
+        db.create_all()
+    return app
+
+
+@pytest.fixture
 def app(user, plan_record):
     app = create_app(
         {
