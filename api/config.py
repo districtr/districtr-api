@@ -16,7 +16,10 @@ def secret(name, default=None, mode="r", secrets_path="/run/secrets/"):
 
 
 def environment(name, default=None):
-    return os.environ.get(name, default)
+    value = os.environ.get(name, default)
+    if isinstance(value, str):
+        return value.strip()
+    return value
 
 
 def database_uri(user, password, db, port, host, driver="postgresql"):

@@ -49,6 +49,10 @@ class TestEnvironment:
             environment("MISSING_ENV_VAR", default="default_value") == "default_value"
         )
 
+    def test_environment_strips_whitespace(self):
+        os.environ["TEST_ENV_VAR"] = "variable\n"
+        assert environment("TEST_ENV_VAR", None) == "variable"
+
 
 def test_database_uri():
     uri = database_uri("mggg", "mgggiskool", "gis", 5432, "gis")
