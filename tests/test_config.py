@@ -25,7 +25,8 @@ class TestSecret:
 
     def test_secret_gives_default_when_missing(self):
         default = "my_default_secret"
-        value = secret("missing_secret", default=default, secrets_path="./")
+        with pytest.warns(DefaultSecretWarning):
+            value = secret("missing_secret", default=default, secrets_path="./")
         assert value == default
 
     def test_secret_warns_for_default(self):

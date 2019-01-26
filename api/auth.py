@@ -1,22 +1,47 @@
 import functools
 
-from flask import current_app, g, request
-from itsdangerous import JSONWebSignatureSerializer
+from flask import current_app, request
+from itsdangerous import JSONWebSignatureSerializer, TimedJSONWebSignatureSerializer
 
-from .exceptions import ApiException
+from .exceptions import Unauthenticated, Unauthorized
 from .models import User
 from .schemas import UserSchema
+from .utils import gcache
 
-token_data_schema = UserSchema(only=("id", "first", "last", "email"))
+token_data_schema = UserSchema(only=("id", "first", "last", "email", "roles"))
+
+
+def exchange_signin_token_for_bearer_token(signin_token):
+    timed_serializer = TimedJSONWebSignatureSerializer(
+        current_app.config["SECRET_KEY"], expires_in=1800
+    )
+
+    serialized_user = timed_serializer.loads(signin_token)
+    serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
+    return serializer.dumps(serialized_user)
+
+
+def create_signin_token(user):
+    """Creates a timed JWT. The user agent (e.g. front-end API client) can exchange
+    this token for a Bearer token that doesn't expire. The user agent must store the
+    Bearer token somewhere (e.g. localStorage)."""
+    timed_serializer = TimedJSONWebSignatureSerializer(
+        current_app.config["SECRET_KEY"], expires_in=1800
+    )
+
+    return timed_serializer.dumps(token_data_schema.dump(user))
 
 
 def create_bearer_token(user):
     serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
+
     return serializer.dumps(token_data_schema.dump(user))
 
 
 def get_bearer_token(header):
-    # The header will be of the form "Bearer {token}" or "JWT {token}"
+    """Extracts the token from a header of the form "Bearer {token}" or
+    "JWT {token}"
+    """
     if not header:
         return None
     header_parts = header.split(" ")
@@ -26,7 +51,8 @@ def get_bearer_token(header):
     return token
 
 
-def get_current_user_from_request(request):
+@gcache
+def load_token_data(request):
     token = get_bearer_token(request.headers.get("Authorization"))
     if not token:
         return None
@@ -34,33 +60,53 @@ def get_current_user_from_request(request):
     serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
     token_data = serializer.loads(token)
 
-    return User.query.get(token_data["id"])
+    return token_data
 
 
+@gcache
 def get_current_user():
-    user = getattr(g, "user", None)
-    if user is None:
-        user = get_current_user_from_request(request)
-        g.user = user
+    user_data = load_token_data(request)
+    user = None
+    if user_data:
+        user = User.query.get(user_data["id"])
     return user
+
+
+@gcache
+def get_current_user_roles():
+    user_data = load_token_data(request)
+
+    if user_data is None:
+        return []
+    else:
+        return user_data["roles"]
 
 
 def authenticate(controller):
     @functools.wraps(controller)
     def wrapper(*args, **kwargs):
-        if get_current_user() is None:
-            raise ApiException("This action requires authentication.", 403)
+        roles = get_current_user_roles()
+        if not roles:
+            raise Unauthenticated()
         return controller(*args, **kwargs)
 
     return wrapper
 
 
-def admin_only(controller):
-    @functools.wraps(controller)
-    def wrapper(*args, **kwargs):
-        user = get_current_user()
-        if user is None or not user.is_admin():
-            raise ApiException("This action requires a more privileged role.", 403)
-        return controller(*args, **kwargs)
+def requires_roles(roles):
+    def decorator(controller):
+        @functools.wraps(controller)
+        def wrapper(*args, **kwargs):
+            user_roles = get_current_user_roles()
+            if not user_roles:
+                raise Unauthenticated()
+            if any(role not in user_roles for role in roles):
+                raise Unauthorized()
+            return controller(*args, **kwargs)
 
-    return wrapper
+        return wrapper
+
+    return decorator
+
+
+admin_only = requires_roles(["admin"])

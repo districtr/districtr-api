@@ -2,8 +2,8 @@ from flask import Flask
 from flask_cors import CORS
 from flask_migrate import Migrate
 
-from .controllers import places, plans, users
-from .exceptions import ApiException, not_found
+from .controllers import register_blueprints
+from .exceptions import register_error_handlers
 from .models import db
 from .result import ApiResult
 
@@ -27,12 +27,8 @@ def create_app(test_config=None):
     db.init_app(app)
     Migrate(app, db)
 
-    app.register_blueprint(plans, url_prefix="/plans")
-    app.register_blueprint(users, url_prefix="/users")
-    app.register_blueprint(places, url_prefix="/places")
-
-    app.register_error_handler(ApiException, lambda err: err.to_result())
-    app.register_error_handler(404, not_found)
+    register_blueprints(app)
+    register_error_handlers(app)
 
     @app.route("/")
     def hello():

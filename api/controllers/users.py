@@ -71,9 +71,16 @@ def delete_user(id):
 @admin_only
 def new_user():
     user_data = request.get_json()
-    user = user_schema.load(user_data)
+    user = create_user(user_schema.load(user_data))
+    return jsonify(id=user.id), 201
+
+
+def create_user(loaded_user):
+    user = User.from_schema_load(loaded_user)
+
+    if user.email_already_exists():
+        raise ApiException("User with the provided email already exists.", status=409)
 
     db.session.add(user)
     db.session.commit()
-
-    return jsonify(id=user.id), 201
+    return user

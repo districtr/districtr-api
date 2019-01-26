@@ -5,6 +5,10 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
 
+    @classmethod
+    def by_name(cls, name):
+        return Role.query.filter_by(name=name).first()
+
 
 roles = db.Table(
     "roles",
@@ -18,6 +22,7 @@ class User(db.Model):
     first = db.Column(db.String(80), nullable=False)
     last = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(256), nullable=False)
+
     roles = db.relationship("Role", secondary=roles, lazy="subquery")
 
     plans = db.relationship("Plan", backref="user")
@@ -37,3 +42,16 @@ class User(db.Model):
 
     def belongs_to(self, user):
         return user.id == self.id or user.is_admin()
+
+    def email_already_exists(self):
+        existing = User.query.filter_by(email=self.email).first()
+        return bool(existing)
+
+    @classmethod
+    def from_schema_load(cls, data):
+        if "roles" not in data:
+            data["roles"] = [{"name": "user"}]
+        roles = [Role.by_name(role["name"]) for role in data["roles"]]
+        user = cls(first=data["first"], last=data["last"], email=data["email"])
+        user.roles = roles
+        return user
