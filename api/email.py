@@ -10,7 +10,7 @@ def send_email(from_address, to_address, subject, body):
         Email(from_address), subject, Email(to_address), Content("text/html", body)
     )
 
-    if current_app.config["SEND_EMAILS"] is False:
+    if current_app.config.get("SEND_EMAILS", True) is False:
         print("Sending mail", mail)
         return
 

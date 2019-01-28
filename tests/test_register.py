@@ -44,6 +44,22 @@ def test_registration_works_with_empty_db(app_without_roles):
             assert send_registration_email.call_count == 1
 
 
+def test_does_not_fail_when_SEND_EMAILS_is_missing_from_config(app_without_roles):
+    with app_without_roles.app_context():
+        del app_without_roles.config["SEND_EMAILS"]
+        client = app_without_roles.test_client()
+        with patch(
+            "api.controllers.register.send_registration_email"
+        ) as send_registration_email:
+            response = client.post(
+                "/register/",
+                json={"first": "Emmy", "last": "Noether", "email": "emmy@brynmawr.edu"},
+            )
+
+            assert response.status_code == 201
+            assert send_registration_email.call_count == 1
+
+
 def test_signin(client, user_record):
     with patch("api.controllers.register.send_signin_email") as send_signin_email:
         response = client.post("/signin/", json={"email": user_record["email"]})
