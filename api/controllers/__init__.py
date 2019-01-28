@@ -10,4 +10,4 @@ def register_blueprints(app):
     app.register_blueprint(users, url_prefix="/users")
     app.register_blueprint(places, url_prefix="/places")
     app.register_blueprint(tokens, url_prefix="/tokens")
-    app.register_blueprint(register_bp, url_prefix="/register")
+    app.register_blueprint(register_bp)
