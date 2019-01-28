@@ -1,4 +1,5 @@
 from itsdangerous import BadData
+from marshmallow import ValidationError
 from werkzeug.datastructures import WWWAuthenticate
 
 from .result import ApiResult
@@ -51,7 +52,18 @@ def not_found(error):
     return ApiException("Resource not found.", 404).to_result()
 
 
+def convert_validation_error_to_api_result(error):
+    return ApiResult(
+        {
+            "message": "The provided data did not conform to the proper schema.",
+            "errors": error.normalized_messages(),
+        },
+        status=400,
+    )
+
+
 def register_error_handlers(app):
     app.register_error_handler(ApiException, lambda err: err.to_result())
     app.register_error_handler(404, not_found)
     app.register_error_handler(BadData, lambda: InvalidToken().to_result())
+    app.register_error_handler(ValidationError, convert_validation_error_to_api_result)
