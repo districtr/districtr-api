@@ -13,10 +13,13 @@ registration_schema = UserSchema(only=("first", "last", "email"))
 
 
 def send_sign_in_email(email, token):
-    link = "https://districtr.org/signin?token={}".format(token)
-    template = current_app.jinja_env.get_template("signin_email.html")
+    base_url = current_app.config["FRONTEND_BASE_URL"]
+    link = base_url + "/signin?token={}".format(token)
+    template = current_app.jinja_env.get_template("verify_email.html")
     content = template.render(link=link)
-    return send_email("sign.in@districtr.org", email, "Sign in to Districtr", content)
+    return send_email(
+        "registration@districtr.org", email, "Confirm your Districtr account", content
+    )
 
 
 @bp.route("/", methods=["POST"])
