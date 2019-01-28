@@ -1,7 +1,8 @@
 import functools
 
 from flask import current_app, request
-from itsdangerous import JSONWebSignatureSerializer, TimedJSONWebSignatureSerializer
+from itsdangerous import (JSONWebSignatureSerializer,
+                          TimedJSONWebSignatureSerializer)
 
 from .exceptions import Unauthenticated, Unauthorized
 from .models import User
@@ -29,7 +30,7 @@ def create_signin_token(user):
         current_app.config["SECRET_KEY"], expires_in=1800
     )
 
-    return timed_serializer.dumps(token_data_schema.dump(user))
+    return timed_serializer.dumps({"id": user.id})
 
 
 def create_bearer_token(user):
