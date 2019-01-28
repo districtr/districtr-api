@@ -15,17 +15,20 @@ registration_schema = UserSchema(only=("first", "last", "email"))
 signin_schema = UserSchema(only=["email"])
 
 
-def send_signin_email(email, token):
+def signin_link(token):
     base_url = current_app.config["FRONTEND_BASE_URL"]
-    link = base_url + "/signin?token={}".format(token)
+    return base_url + "/signin?token={}".format(token.decode("utf-8"))
+
+
+def send_signin_email(email, token):
+    link = signin_link(token)
     template = current_app.jinja_env.get_template("signin_email.html")
     content = template.render(link=link)
     return send_email("signin@districtr.org", email, "Sign in to Districtr", content)
 
 
 def send_registration_email(email, token):
-    base_url = current_app.config["FRONTEND_BASE_URL"]
-    link = base_url + "/signin?token={}".format(token)
+    link = signin_link(token)
     template = current_app.jinja_env.get_template("verify_email.html")
     content = template.render(link=link)
     return send_email(
