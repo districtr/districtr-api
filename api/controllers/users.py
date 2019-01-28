@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 
 from ..auth import admin_only, authenticate, get_current_user
-from ..exceptions import ApiException
+from ..exceptions import ApiException, Unauthorized
 from ..models import Plan, User, db
 from ..schemas import UserSchema
 from .plans import plans_schema
@@ -44,7 +44,7 @@ def update_user(id):
     user = User.query.get_or_404(id)
 
     if not user.belongs_to(get_current_user()):
-        raise ApiException("You are not authorized to edit this resource.", 403)
+        raise Unauthorized()
 
     data = request.get_json()
     user.update(**data)
@@ -58,8 +58,8 @@ def update_user(id):
 def delete_user(id):
     user = User.query.get_or_404(id)
 
-    if user.id == get_current_user().id:
-        return ApiException("A user cannot delete itself.", 400)
+    if not user.belongs_to(get_current_user()):
+        raise Unauthorized()
 
     db.session.delete(user)
     db.session.commit()

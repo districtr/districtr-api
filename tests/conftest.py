@@ -5,17 +5,19 @@ from api.auth import create_bearer_token
 from api.models import Place, Role, User, db
 from api.schemas import PlanSchema
 
+test_config = {
+    "TESTING": True,
+    "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+    "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+    "SECRET_KEY": b"my_secret_key",
+    "SEND_EMAILS": False,
+    "FRONTEND_BASE_URL": "https://districtr.org",
+}
+
 
 @pytest.fixture
 def app_without_roles(user, plan_record):
-    app = create_app(
-        {
-            "TESTING": True,
-            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-            "SECRET_KEY": b"my_secret_key",
-        }
-    )
+    app = create_app(test_config)
 
     with app.app_context():
         db.create_all()
@@ -24,14 +26,7 @@ def app_without_roles(user, plan_record):
 
 @pytest.fixture
 def app(user, plan_record):
-    app = create_app(
-        {
-            "TESTING": True,
-            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
-            "SECRET_KEY": b"my_secret_key",
-        }
-    )
+    app = create_app(test_config)
 
     with app.app_context():
         db.create_all()
