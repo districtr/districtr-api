@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
-from api.controllers.register import send_registration_email, send_signin_email
+from api.controllers.register import (send_registration_email,
+                                      send_signin_email, signin_link)
 
 
 def test_registration_sends_email(client):
@@ -61,11 +62,11 @@ def test_does_not_fail_when_SEND_EMAILS_is_missing_from_config(app_without_roles
 
 
 def test_signin(client, user_record):
-    with patch("api.controllers.register.send_signin_email") as send_signin_email:
+    with patch("api.controllers.register.send_email") as send_email:
         response = client.post("/signin/", json={"email": user_record["email"]})
 
         assert response.status_code == 201
-        assert send_signin_email.call_count == 1
+        assert send_email.call_count == 1
 
 
 def test_registration_of_existing_user_sends_signin_email(client, user_record):
@@ -82,3 +83,12 @@ def test_registration_of_existing_user_sends_signin_email(client, user_record):
         assert response.status_code == 201
         assert "already exists" in response.get_json()["message"]
         assert send_signin_email.call_count == 1
+
+
+def test_signin_link(app):
+    with app.app_context():
+        expected = app.config["FRONTEND_BASE_URL"] + "/?token=abcdefghijk12345678"
+        # Test it works with unicode
+        assert signin_link("abcdefghijk12345678") == expected
+        # Test it works with bytes
+        assert signin_link(b"abcdefghijk12345678") == expected
