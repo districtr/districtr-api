@@ -17,7 +17,7 @@ signin_schema = UserSchema(only=["email"])
 
 def signin_link(token):
     base_url = current_app.config["FRONTEND_BASE_URL"]
-    return base_url + "/signin?token={}".format(token.decode("utf-8"))
+    return base_url + "/?token={}".format(token.decode("utf-8"))
 
 
 def send_signin_email(email, token):

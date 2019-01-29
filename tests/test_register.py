@@ -18,7 +18,7 @@ def test_registration_sends_email(client):
 
 def test_templates_work(app):
     with app.app_context():
-        expected_link = "https://districtr.org/signin?token=abcdefg123456789"
+        expected_link = app.config["FRONTEND_BASE_URL"] + "/?token=abcdefg123456789"
         with patch("api.controllers.register.send_email") as send_email:
             send_signin_email("max.hully@gmail.com", b"abcdefg123456789")
             content = send_email.call_args[0][3]
