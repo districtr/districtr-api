@@ -7,7 +7,10 @@ from .exceptions import ApiException
 
 def send_email(from_address, to_address, subject, body):
     mail = Mail(
-        Email(from_address), subject, Email(to_address), Content("text/html", body)
+        Email(from_address, name="Districtr"),
+        subject,
+        Email(to_address),
+        Content("text/html", body),
     )
 
     if current_app.config.get("SEND_EMAILS", True) is False:

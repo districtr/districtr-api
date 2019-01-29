@@ -1,7 +1,7 @@
 import functools
 
 from flask import current_app, request
-from itsdangerous import JSONWebSignatureSerializer, TimedJSONWebSignatureSerializer
+from itsdangerous import JSONWebSignatureSerializer, URLSafeTimedSerializer
 
 from .exceptions import Unauthenticated, Unauthorized
 from .models import User
@@ -12,24 +12,20 @@ token_data_schema = UserSchema(only=("id", "first", "last", "email", "roles"))
 
 
 def exchange_signin_token_for_bearer_token(signin_token):
-    timed_serializer = TimedJSONWebSignatureSerializer(
-        current_app.config["SECRET_KEY"], expires_in=1800
-    )
+    timed_serializer = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
 
-    serialized_user = timed_serializer.loads(signin_token)
-    serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
-    return serializer.dumps(serialized_user)
+    user_id = timed_serializer.loads(signin_token, max_age=1800)
+    user = User.query.get(user_id)
+    return create_bearer_token(user)
 
 
 def create_signin_token(user):
     """Creates a timed JWT. The user agent (e.g. front-end API client) can exchange
     this token for a Bearer token that doesn't expire. The user agent must store the
     Bearer token somewhere (e.g. localStorage)."""
-    timed_serializer = TimedJSONWebSignatureSerializer(
-        current_app.config["SECRET_KEY"], expires_in=1800
-    )
+    timed_serializer = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
 
-    return timed_serializer.dumps(token_data_schema.dump(user))
+    return timed_serializer.dumps(user.id)
 
 
 def create_bearer_token(user):
