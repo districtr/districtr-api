@@ -29,7 +29,7 @@ class User(db.Model):
     email = db.Column(db.String(256), nullable=False)
 
     roles = db.relationship("Role", secondary=roles, lazy="subquery")
-
+    place_requests = db.relationship("PlaceRequest", backref="user")
     plans = db.relationship("Plan", backref="user")
 
     def update(self, first=None, last=None, email=None, id=None):
@@ -51,6 +51,10 @@ class User(db.Model):
     def email_already_exists(self):
         existing = User.query.filter_by(email=self.email).first()
         return bool(existing)
+
+    @classmethod
+    def by_email(cls, email):
+        return cls.query.filter_by(email=email).first()
 
     @classmethod
     def from_schema_load(cls, data):

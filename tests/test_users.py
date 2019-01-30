@@ -71,7 +71,7 @@ def test_user_schema_has_user_role_by_default(app):
 def test_emails_must_be_unique(client, admin_headers):
     response = client.post(
         "/users/",
-        json={"first": "Mac", "last": "Sully", "email": "max.hully@gmail.com"},
+        json={"first": "Mac", "last": "Sully", "email": "me@example.com"},
         headers=admin_headers,
     )
 

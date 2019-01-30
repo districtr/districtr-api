@@ -42,9 +42,9 @@ def test_can_get_single_plan_by_id(client, plan_record):
         "mapping": plan_record["mapping"],
         "user": {
             "id": 1,
-            "first": "Max",
-            "last": "Hully",
-            "email": "max.hully@gmail.com",
+            "first": "Example",
+            "last": "Person",
+            "email": "me@example.com",
         },
     }
     response = client.get("/plans/1")
