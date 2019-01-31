@@ -28,19 +28,21 @@ class User(db.Model):
     last = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(256), nullable=False)
 
+    organization = db.Column(db.String(160), nullable=True)
+
     roles = db.relationship("Role", secondary=roles, lazy="subquery")
     place_requests = db.relationship("PlaceRequest", backref="user")
     plans = db.relationship("Plan", backref="user")
 
-    def update(self, first=None, last=None, email=None, id=None):
+    def update(self, first=None, last=None, email=None, organization=None, id=None):
         if first is not None:
             self.first = first
-
         if last is not None:
             self.last = last
-
         if email is not None:
             self.email = email
+        if organization is not None:
+            self.organization = organization
 
     def is_admin(self):
         return any(role.name == "admin" for role in self.roles)
@@ -61,6 +63,11 @@ class User(db.Model):
         if "roles" not in data:
             data["roles"] = [{"name": "user"}]
         roles = [Role.by_name(role["name"]) for role in data["roles"]]
-        user = cls(first=data["first"], last=data["last"], email=data["email"])
+        user = cls(
+            first=data["first"],
+            last=data["last"],
+            email=data["email"],
+            organization=data.get("organization", None),
+        )
         user.roles = roles
         return user

@@ -1,3 +1,6 @@
+import pytest
+from marshmallow import ValidationError
+
 from api.schemas import PlaceRequestSchema
 
 
@@ -25,6 +28,7 @@ def test_can_create_requests_with_new_user(client):
                 "first": "New",
                 "last": "Person",
                 "email": "someone.else@example.com",
+                "organization": "MGGG",
             },
         },
     )
@@ -36,9 +40,15 @@ def test_can_list_requests_with_admin_auth(client, admin_headers):
         "name": "Alabama",
         "information": "",
         "districtTypes": "State senate",
-        "user": {"first": "New", "last": "Person", "email": "someone.else@example.com"},
+        "user": {
+            "first": "New",
+            "last": "Person",
+            "email": "someone.else@example.com",
+            "organization": "MGGG",
+        },
     }
     client.post("/requests/", json=payload)
+
     response = client.get("/requests/", headers=admin_headers)
     assert response.status_code == 200
     assert response.get_json()[0]["name"] == "Alabama"
@@ -58,3 +68,18 @@ def test_schema_validates_a_good_request():
             },
         }
     )
+
+
+def test_schema_invalidates_a_bad_request():
+    schema = PlaceRequestSchema()
+    with pytest.raises(ValidationError):
+        schema.load(
+            {
+                "information": "",
+                "user": {
+                    "first": "New",
+                    "last": "Person",
+                    "email": "someone.else@example.com",
+                },
+            }
+        )
