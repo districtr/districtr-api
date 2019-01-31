@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
+from .sa import CustomSQLAlchemy as SQLAlchemy
 
 # Initialize database.
 db = SQLAlchemy()

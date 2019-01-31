@@ -65,9 +65,9 @@ def client(app):
 @pytest.fixture
 def user_record():
     return {
-        "first": "Max",
-        "last": "Hully",
-        "email": "max.hully@gmail.com",
+        "first": "Example",
+        "last": "Person",
+        "email": "me@example.com",
         "roles": ["user", "admin"],
     }
 

@@ -9,9 +9,9 @@ flask-sqlalchemy = "*"
 flask-cors = "*"
 marshmallow = "*"
 gunicorn = "*"
-"psycopg2" = "*"
 flask-migrate = "*"
 sendgrid = "*"
+"psycopg2" = "*"
 
 [dev-packages]
 pytest = "*"

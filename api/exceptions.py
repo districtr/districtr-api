@@ -65,5 +65,5 @@ def convert_validation_error_to_api_result(error):
 def register_error_handlers(app):
     app.register_error_handler(ApiException, lambda err: err.to_result())
     app.register_error_handler(404, not_found)
-    app.register_error_handler(BadData, lambda: InvalidToken().to_result())
+    app.register_error_handler(BadData, lambda err: InvalidToken().to_result())
     app.register_error_handler(ValidationError, convert_validation_error_to_api_result)
