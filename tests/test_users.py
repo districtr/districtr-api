@@ -1,3 +1,4 @@
+from api.models import User, db
 from api.schemas.user import UserSchema
 
 
@@ -76,3 +77,81 @@ def test_emails_must_be_unique(client, admin_headers):
     )
 
     assert response.status_code == 409
+
+
+def test_can_add_role(app):
+    with app.app_context():
+        user = User.from_schema_load(
+            dict(first="Example", last="Person", email="example123@example.com")
+        )
+        user.add_role("admin")
+        db.session.add(user)
+        db.session.commit()
+
+        id = user.id
+        retrieved_user = User.query.get(id)
+        assert set(role.name for role in retrieved_user.roles) == {"user", "admin"}
+
+
+def test_can_add_new_role(app_without_roles):
+    app = app_without_roles
+    with app.app_context():
+        user = User.from_schema_load(
+            dict(first="Example", last="Person", email="example123@example.com")
+        )
+        user.add_role("admin")
+        db.session.add(user)
+        db.session.commit()
+
+        id = user.id
+        retrieved_user = User.query.get(id)
+        assert set(role.name for role in retrieved_user.roles) == {"user", "admin"}
+
+
+def test_adding_a_role_is_idempotent(app_without_roles):
+    app = app_without_roles
+    with app.app_context():
+        user = User.from_schema_load(
+            dict(first="Example", last="Person", email="example123@example.com")
+        )
+        user.add_role("admin")
+        db.session.add(user)
+        db.session.commit()
+
+        id = user.id
+        retrieved_user = User.query.get(id)
+        assert set(role.name for role in retrieved_user.roles) == {"user", "admin"}
+
+        retrieved_user.add_role("admin")
+        db.session.commit()
+
+        id = user.id
+        retrieved_user_again = User.query.get(id)
+        assert set(role.name for role in retrieved_user_again.roles) == {
+            "user",
+            "admin",
+        }
+
+
+def test_can_add_a_role_to_existing_user(app_without_roles):
+    app = app_without_roles
+    with app.app_context():
+        user = User.from_schema_load(
+            dict(first="Example", last="Person", email="example123@example.com")
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        id = user.id
+        retrieved_user = User.query.get(id)
+        assert set(role.name for role in retrieved_user.roles) == {"user"}
+
+        retrieved_user.add_role("admin")
+        db.session.commit()
+
+        id = user.id
+        retrieved_user_again = User.query.get(id)
+        assert set(role.name for role in retrieved_user_again.roles) == {
+            "user",
+            "admin",
+        }
