@@ -13,16 +13,16 @@ services:
       POSTGRES_PASSWORD: "mgggiskool"
       POSTGRES_USER: "mggg"
       ALLOW_IP_RANGE: "0.0.0.0/0"
-  api:
-    image: mggg/districtr-api
-    environment:
-      POSTGRES_DB: "gis"
-      POSTGRES_PASSWORD: "mgggiskool"
-      POSTGRES_USER: "mggg"
-      POSTGRES_PORT: "5432"
-      POSTGRES_HOST: "localhost"
-      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
-    ports:
-      - 5000:5000
-    depends_on:
-      - gis
+  # api:
+  #   image: mggg/districtr-api
+  #   environment:
+  #     POSTGRES_DB: "gis"
+  #     POSTGRES_PASSWORD: "mgggiskool"
+  #     POSTGRES_USER: "mggg"
+  #     POSTGRES_PORT: "5432"
+  #     POSTGRES_HOST: "localhost"
+  #     SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+  #   ports:
+  #     - 5000:5000
+  #   depends_on:
+  #     - gis
