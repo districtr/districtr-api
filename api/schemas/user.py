@@ -16,6 +16,7 @@ class UserSchema(Schema):
     first = fields.Str()
     last = fields.Str()
     email = fields.Email(required=True)
+    organization = fields.Str()
     roles = fields.Nested(RoleSchema, many=True)
 
     @pre_load
