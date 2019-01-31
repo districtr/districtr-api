@@ -54,6 +54,14 @@ class User(db.Model):
         existing = User.query.filter_by(email=self.email).first()
         return bool(existing)
 
+    def add_role(self, role_name):
+        if not self.has_role(role_name):
+            role = Role.by_name(role_name)
+            self.roles.append(role)
+
+    def has_role(self, role_name):
+        return any(role.name == role_name for role in self.roles)
+
     @classmethod
     def by_email(cls, email):
         return cls.query.filter_by(email=email).first()

