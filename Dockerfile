@@ -3,8 +3,8 @@ FROM python:3.6.8-alpine
 LABEL Name=districtr-api Version=0.0.1
 EXPOSE 5000
 
-# Install gcc for psycopg2
-RUN apk add gcc
+# Install gcc and other requirements for psycopg2
+RUN apk add postgresql-dev gcc python3-dev musl-dev
 
 # This is where we'll put the app:
 WORKDIR /app
