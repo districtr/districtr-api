@@ -11,12 +11,18 @@ class Column(db.Model):
     is_id_column = db.Column(db.Boolean(), default=False)
 
 
+class UnitType(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+
+
 class Place(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     description = db.Column(db.Text)
 
     id_column_id = db.Column(db.Integer, db.ForeignKey("column.id"))
+    unit_type_id = db.Column(db.Integer, db.ForeignKey("unit_type.id"))
 
     columns = db.relationship("Column", backref="place", lazy=True)
     plans = db.relationship("Plan", backref="place")
