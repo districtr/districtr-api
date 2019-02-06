@@ -89,7 +89,7 @@ def authenticate(controller):
     return wrapper
 
 
-def requires_roles(roles):
+def requires(roles):
     def decorator(controller):
         @functools.wraps(controller)
         def wrapper(*args, **kwargs):
@@ -105,4 +105,4 @@ def requires_roles(roles):
     return decorator
 
 
-admin_only = requires_roles(["admin"])
+admin_only = requires(["admin"])
