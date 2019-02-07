@@ -13,3 +13,4 @@ def test_can_create_new_place_with_elections(
         "/places/", headers=admin_headers, json=place_record_with_elections
     )
     assert response.status_code == 201
+    assert set(response.get_json().keys()) == {"id", "name", "description", "elections"}
