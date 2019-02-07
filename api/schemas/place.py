@@ -88,3 +88,14 @@ class PlaceSchema(Schema):
     @camel_to_snake
     def create_place(self, data):
         return Place(**data)
+
+    @pre_dump
+    def dump_place(self, place):
+        return {
+            "id": place.id,
+            "name": place.name,
+            "description": place.description,
+            "elections": place.elections,
+            "tilesets": place.tilesets,
+            "districtingProblems": place.districting_problems,
+        }

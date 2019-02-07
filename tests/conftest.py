@@ -145,3 +145,18 @@ def place_record_with_tilesets():
             },
         ],
     }
+
+
+@pytest.fixture
+def place_record_with_districting_problem():
+    return {
+        "name": "Alabama",
+        "description": "A state",
+        "districtingProblems": [
+            {
+                "numberOfParts": 4,
+                "name": "Town Council",
+                "pluralNoun": "Town Council Districts",
+            }
+        ],
+    }
