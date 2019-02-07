@@ -104,3 +104,21 @@ def user_token(app):
 @pytest.fixture
 def user_headers(user_token):
     return {"Authorization": b"Bearer " + user_token}
+
+
+@pytest.fixture
+def place_record_with_elections():
+    return {
+        "name": "Alabama",
+        "description": "A state",
+        "elections": [
+            {
+                "race": "Presidential",
+                "year": 2008,
+                "vote_totals": [
+                    {"key": "2008D", "name": "Democratic"},
+                    {"key": "2008R", "name": "Republican"},
+                ],
+            }
+        ],
+    }

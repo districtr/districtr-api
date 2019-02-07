@@ -8,12 +8,21 @@ class Column(db.Model):
     min = db.Column(db.Float())
     max = db.Column(db.Float())
     sum = db.Column(db.Float())
-    is_id_column = db.Column(db.Boolean(), default=False)
+    # Optional election id for vote total columns:
+    election_id = db.Column(db.Integer, db.ForeignKey("election.id"))
 
 
-class UnitType(db.Model):
+# class UnitType(db.Model):
+#     id = db.Column(db.Integer(), primary_key=True)
+#     name = db.Column(db.String(80), nullable=False)
+
+
+class Election(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
+    race = db.Column(db.String(80), nullable=False)
+    vote_totals = db.relationship("Column", backref="election", lazy=True)
+    year = db.Column(db.Integer(), nullable=False)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
 
 
 class Place(db.Model):
@@ -26,6 +35,8 @@ class Place(db.Model):
 
     # columns = db.relationship("Column", backref="place", lazy=True)
     plans = db.relationship("Plan", backref="place")
+
+    elections = db.relationship("Election", backref="place", lazy=True)
 
     def __repr__(self):
         return "<Place {}>".format(self.name)
