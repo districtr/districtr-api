@@ -115,10 +115,48 @@ def place_record_with_elections():
             {
                 "race": "Presidential",
                 "year": 2008,
-                "vote_totals": [
+                "voteTotals": [
                     {"key": "2008D", "name": "Democratic"},
                     {"key": "2008R", "name": "Republican"},
                 ],
+            }
+        ],
+    }
+
+
+@pytest.fixture
+def place_record_with_tilesets():
+    return {
+        "name": "Alabama",
+        "description": "A state",
+        "tilesets": [
+            {
+                "type": "fill",
+                "source": {"type": "vector", "url": "mapbox://districtr.pa_vtds"},
+                "sourceLayer": "pa_vtds",
+            },
+            {
+                "type": "circle",
+                "source": {
+                    "type": "vector",
+                    "url": "mapbox://districtr.pa_vtds_points",
+                },
+                "sourceLayer": "pa_vtds_points",
+            },
+        ],
+    }
+
+
+@pytest.fixture
+def place_record_with_districting_problem():
+    return {
+        "name": "Alabama",
+        "description": "A state",
+        "districtingProblems": [
+            {
+                "numberOfParts": 4,
+                "name": "Town Council",
+                "pluralNoun": "Town Council Districts",
             }
         ],
     }

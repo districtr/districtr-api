@@ -25,6 +25,23 @@ class Election(db.Model):
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
 
 
+class Tileset(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    type = db.Column(db.String(80), nullable=False)
+    source_url = db.Column(db.String(256), nullable=False)
+    source_type = db.Column(db.String(80), nullable=False)
+    source_layer = db.Column(db.String(80), nullable=False)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
+
+
+class DistrictingProblem(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    number_of_parts = db.Column(db.Integer(), nullable=False)
+    name = db.Column(db.String(256), nullable=False)
+    plural_noun = db.Column(db.String(256), nullable=False)
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
+
+
 class Place(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
@@ -37,6 +54,10 @@ class Place(db.Model):
     plans = db.relationship("Plan", backref="place")
 
     elections = db.relationship("Election", backref="place", lazy=True)
+    tilesets = db.relationship("Tileset", backref="place", lazy=True)
+    districting_problems = db.relationship(
+        "DistrictingProblem", backref="place", lazy=True
+    )
 
     def __repr__(self):
         return "<Place {}>".format(self.name)

@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields, pre_load
 
+from ..utils import camel_to_snake
 from .user import UserSchema
 
 
@@ -14,8 +15,6 @@ class PlaceRequestSchema(Schema):
     user = fields.Nested(UserSchema(only=("first", "last", "email", "organization")))
 
     @pre_load
+    @camel_to_snake
     def camel_case_to_snake_case(self, data):
-        if "districtTypes" in data:
-            data["district_types"] = data["districtTypes"]
-            del data["districtTypes"]
         return data
