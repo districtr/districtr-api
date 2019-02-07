@@ -115,7 +115,7 @@ def place_record_with_elections():
             {
                 "race": "Presidential",
                 "year": 2008,
-                "vote_totals": [
+                "voteTotals": [
                     {"key": "2008D", "name": "Democratic"},
                     {"key": "2008R", "name": "Republican"},
                 ],

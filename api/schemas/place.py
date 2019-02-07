@@ -4,7 +4,8 @@ from marshmallow import Schema, fields, post_load, pre_dump, validate
 from marshmallow.validate import OneOf
 
 from ..models import Place
-from ..models.place import Column, Election, Tileset
+from ..models.place import Column, DistrictingProblem, Election, Tileset
+from ..utils import camel_to_snake
 
 
 class ColumnSchema(Schema):
@@ -24,9 +25,10 @@ class ElectionSchema(Schema):
         validate=validate.Range(min=1776, max=datetime.now().year), required=True
     )
     race = fields.String(required=True)
-    vote_totals = fields.Nested(ColumnSchema, many=True)
+    voteTotals = fields.Nested(ColumnSchema, many=True)
 
     @post_load
+    @camel_to_snake
     def create_election(self, data):
         return Election(**data)
 
@@ -66,7 +68,12 @@ class DistrictingProblemSchema(Schema):
     id = fields.Int(dump_only=True)
     numberOfParts = fields.Int(required=True)
     name = fields.Str(required=True)
-    pluralNoun = fields.Str(required=True)
+    pluralNoun = fields.Str(default="Districts", required=True)
+
+    @post_load
+    @camel_to_snake
+    def create_districting_problem(self, data):
+        return DistrictingProblem(**data)
 
 
 class PlaceSchema(Schema):
@@ -75,7 +82,9 @@ class PlaceSchema(Schema):
     description = fields.Str()
     elections = fields.Nested(ElectionSchema, many=True)
     tilesets = fields.Nested(TilesetSchema, many=True)
+    districtingProblems = fields.Nested(DistrictingProblemSchema, many=True)
 
     @post_load
+    @camel_to_snake
     def create_place(self, data):
         return Place(**data)

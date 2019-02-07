@@ -12,6 +12,7 @@ gunicorn = "*"
 flask-migrate = "*"
 sendgrid = "*"
 "psycopg2" = "*"
+inflection = "*"
 
 [dev-packages]
 pytest = "*"
