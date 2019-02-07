@@ -38,13 +38,9 @@ def test_can_create_new_place_with_tilesets(
         "/places/", headers=admin_headers, json=place_record_with_tilesets
     )
     assert response.status_code == 201
-    assert set(response.get_json().keys()) == {
-        "id",
-        "name",
-        "description",
-        "tilesets",
-        "elections",
-    }
+    body = response.get_json()
+    assert set(body.keys()) == {"id", "name", "description", "tilesets", "elections"}
+    assert body["tilesets"][0] == place_record_with_tilesets["tilesets"][0]
 
 
 def test_place_record_with_tilesets_is_valid(place_record_with_tilesets):

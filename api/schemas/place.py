@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from marshmallow import Schema, fields, post_load, validate
+from marshmallow import Schema, fields, post_load, pre_dump, validate
 from marshmallow.validate import OneOf
 
 from ..models import Place
@@ -51,6 +51,22 @@ class TilesetSchema(Schema):
             source_type=data["source"]["type"],
             source_layer=data["sourceLayer"],
         )
+
+    @pre_dump
+    def unflatten_record(self, tileset):
+        data = {
+            "type": tileset.type,
+            "source": {"type": tileset.source_type, "url": tileset.source_url},
+            "sourceLayer": tileset.source_layer,
+        }
+        return data
+
+
+class DistrictingProblemSchema(Schema):
+    id = fields.Int(dump_only=True)
+    numberOfParts = fields.Int(required=True)
+    name = fields.Str(required=True)
+    pluralNoun = fields.Str(required=True)
 
 
 class PlaceSchema(Schema):
