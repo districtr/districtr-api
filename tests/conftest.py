@@ -122,3 +122,26 @@ def place_record_with_elections():
             }
         ],
     }
+
+
+@pytest.fixture
+def place_record_with_tilesets():
+    return {
+        "name": "Alabama",
+        "description": "A state",
+        "tilesets": [
+            {
+                "type": "fill",
+                "source": {"type": "vector", "url": "mapbox://districtr.pa_vtds"},
+                "sourceLayer": "pa_vtds",
+            },
+            {
+                "type": "circle",
+                "source": {
+                    "type": "vector",
+                    "url": "mapbox://districtr.pa_vtds_points",
+                },
+                "sourceLayer": "pa_vtds_points",
+            },
+        ],
+    }

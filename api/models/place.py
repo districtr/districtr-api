@@ -25,6 +25,15 @@ class Election(db.Model):
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
 
 
+class Tileset(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    type = db.Column(db.String(80))
+    source_url = db.Column(db.String(256))
+    source_type = db.Column(db.String(80))
+    source_layer = db.Column(db.String(80))
+    place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
+
+
 class Place(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
@@ -37,6 +46,7 @@ class Place(db.Model):
     plans = db.relationship("Plan", backref="place")
 
     elections = db.relationship("Election", backref="place", lazy=True)
+    tilesets = db.relationship("Tileset", backref="place", lazy=True)
 
     def __repr__(self):
         return "<Place {}>".format(self.name)
