@@ -13,6 +13,7 @@ user_schema = UserSchema()
 
 
 @bp.route("/", methods=["GET"])
+@admin_only
 def list_users():
     users = User.query.all()
     records = users_schema.dump(users)
@@ -20,18 +21,21 @@ def list_users():
 
 
 @bp.route("/<int:id>", methods=["GET"])
+@admin_only
 def get_user(id):
     user = User.query.get_or_404(id)
     return jsonify(user_schema.dump(user)), 200
 
 
 @bp.route("/<int:user_id>/plans", methods=["GET"])
+@admin_only
 def get_users_plans(user_id):
     plans = User.query.get_or_404(user_id).plans
     return plans_schema.dump(plans)
 
 
 @bp.route("/<int:user_id>/plans/<int:plan_id>", methods=["GET"])
+@admin_only
 def get_users_plan(user_id, plan_id):
     plan = Plan.get_or_404(plan_id)
     if plan.user_id != user_id:

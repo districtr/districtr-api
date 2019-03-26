@@ -104,5 +104,4 @@ def requires(roles):
 
     return decorator
 
-
 admin_only = requires(["admin"])

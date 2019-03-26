@@ -2,9 +2,17 @@ from api.models import User, db
 from api.schemas.user import UserSchema
 
 
-def test_can_list_users(client):
-    response = client.get("/users/")
+def test_can_list_users(client, admin_headers):
+    response = client.get("/users/", headers=admin_headers)
     assert len(response.get_json()) >= 1
+
+def test_list_users_requires_admin(client, user_headers):
+    response = client.get("/users/")
+    assert response.status_code == 401
+
+    response = client.get("/users/", headers=user_headers)
+    assert response.status_code == 403
+
 
 
 def test_create_new_user(client, admin_headers):
