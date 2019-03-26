@@ -1,7 +1,10 @@
 from unittest.mock import patch
 
-from api.controllers.register import (send_registration_email,
-                                      send_signin_email, signin_link)
+from api.controllers.register import (
+    send_registration_email,
+    send_signin_email,
+    signin_link,
+)
 
 
 def test_registration_sends_email(client):

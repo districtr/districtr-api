@@ -1,5 +1,4 @@
-from flask_sqlalchemy import (SessionBase, SignallingSession, SQLAlchemy,
-                              get_state, orm)
+from flask_sqlalchemy import SessionBase, SignallingSession, SQLAlchemy, get_state, orm
 
 
 class CustomSQLAlchemy(SQLAlchemy):
