@@ -12,9 +12,9 @@ class ApiException(Exception):
         self.headers = headers
 
     def to_result(self):
-        body = ""
+        body = {"status": self.status}
         if self.message:
-            body = {"message": self.message}
+            body["message"] = self.message
         return ApiResult(body, status=self.status, headers=self.headers)
 
 
@@ -55,6 +55,7 @@ def not_found(error):
 def convert_validation_error_to_api_result(error):
     return ApiResult(
         {
+            "status": 400,
             "message": "The provided data did not conform to the proper schema.",
             "errors": error.normalized_messages(),
         },

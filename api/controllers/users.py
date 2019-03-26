@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request
 
 from ..auth import admin_only, authenticate, get_current_user
 from ..exceptions import ApiException, Unauthorized
+from ..result import ApiResult
 from ..models import Plan, User, db
 from ..schemas import UserSchema
 from .plans import plans_schema
@@ -17,21 +18,21 @@ user_schema = UserSchema()
 def list_users():
     users = User.query.all()
     records = users_schema.dump(users)
-    return jsonify(records), 200
+    return ApiResult(records)
 
 
 @bp.route("/<int:id>", methods=["GET"])
 @admin_only
 def get_user(id):
     user = User.query.get_or_404(id)
-    return jsonify(user_schema.dump(user)), 200
+    return ApiResult(user_schema.dump(user))
 
 
 @bp.route("/<int:user_id>/plans", methods=["GET"])
 @admin_only
 def get_users_plans(user_id):
     plans = User.query.get_or_404(user_id).plans
-    return plans_schema.dump(plans)
+    return ApiResult(plans_schema.dump(plans))
 
 
 @bp.route("/<int:user_id>/plans/<int:plan_id>", methods=["GET"])
@@ -54,7 +55,7 @@ def update_user(id):
     user.update(**data)
     db.session.commit()
 
-    return jsonify(user_schema.dump(user)), 200
+    return ApiResult(user_schema.dump(user))
 
 
 @bp.route("/<int:id>", methods=["DELETE"])
@@ -68,7 +69,7 @@ def delete_user(id):
     db.session.delete(user)
     db.session.commit()
 
-    return "", 204
+    return ApiResult(status=204)
 
 
 @bp.route("/", methods=["POST"])
@@ -76,7 +77,7 @@ def delete_user(id):
 def new_user():
     user_data = request.get_json()
     user = create_user(user_schema.load(user_data))
-    return jsonify(id=user.id), 201
+    return ApiResult({"id": user.id}, status=201)
 
 
 def create_user(loaded_user):
