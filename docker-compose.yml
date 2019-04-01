@@ -5,24 +5,29 @@ version: "3"
 services:
     gis:
         ports:
-            - "25432:5432"
+            - "5432:5432"
         image: mdillon/postgis:11
-        restart: always
         environment:
             POSTGRES_DB: gis
-            POSTGRES_PASSWORD: mgggiskool
+            POSTGRES_PASSWORD: "${POSTGIS_PASSWORD}"
             POSTGRES_USER: mggg
-            # ALLOW_IP_RANGE: "0.0.0.0/0"
-    # api:
-    #   image: mggg/districtr-api
-    #   environment:
-    #     POSTGRES_DB: "gis"
-    #     POSTGRES_PASSWORD: "mgggiskool"
-    #     POSTGRES_USER: "mggg"
-    #     POSTGRES_PORT: "5432"
-    #     POSTGRES_HOST: "localhost"
-    #     SENDGRID_API_KEY: ${SENDGRID_API_KEY}
-    #   ports:
-    #     - 5000:5000
-    #   depends_on:
-    #     - gis
+            ALLOW_IP_RANGE: "0.0.0.0/0"
+        volumes:
+            - "pgdata:/var/lib/postgresql/data"
+    api:
+        image: "mggg/districtr-api:${API_IMAGE_TAG}"
+        environment:
+            POSTGRES_DB: "gis"
+            POSTGRES_PASSWORD: "${POSTGIS_PASSWORD}"
+            POSTGRES_USER: "mggg"
+            POSTGRES_PORT: "5432"
+            POSTGRES_HOST: "gis"
+            SENDGRID_API_KEY: "${SENDGRID_API_KEY}"
+            SECRET_KEY: "${SECRET_KEY}"
+        ports:
+            - 5000:5000
+        depends_on:
+            - gis
+
+volumes:
+    pgdata:

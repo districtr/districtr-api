@@ -1,6 +1,18 @@
 #!/bin/sh
 set -e
 
-pipenv run flask db upgrade
+# Try to do database migrations, with a longer and longer timeout for each
+# time we fail.
+retries=0
+timeout=10
+until [ $retries -ge 10 ]
+do
+    pipenv run flask db upgrade && break
+    retries=$[$retries+1]
+    sleep $timeout
+    timeout=$[$timeout*2]
+done
 
-exec pipenv run gunicorn -b :5000 --access-logfile - --error-logfile - "api:create_app()"
+pipenv run flask admin create max.hully@gmail.com
+
+exec pipenv run gunicorn -b :5000 -w 4 --access-logfile - --error-logfile - "api:create_app()"

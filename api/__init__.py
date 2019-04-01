@@ -6,6 +6,7 @@ from .controllers import register_blueprints
 from .exceptions import register_error_handlers
 from .models import db
 from .result import ApiResult
+from .commands import admin_cli
 
 
 class ApiFlask(Flask):
@@ -33,5 +34,7 @@ def create_app(test_config=None):
     @app.route("/")
     def hello():
         return "Hello, universe!"
+
+    app.cli.add_command(admin_cli)
 
     return app
