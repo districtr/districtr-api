@@ -1,10 +1,8 @@
-from datetime import datetime
-
-from marshmallow import Schema, fields, post_load, pre_dump, validate
+from marshmallow import Schema, fields, post_load, pre_dump
 from marshmallow.validate import OneOf
 
 from ..models import Place
-from ..models.place import Column, DistrictingProblem, Election, Tileset
+from ..models.place import Column, UnitSet, ColumnSet, DistrictingProblem, Tileset
 from ..utils import camel_to_snake
 
 
@@ -18,19 +16,6 @@ class ColumnSchema(Schema):
     @post_load
     def create_column(self, data):
         return Column(**data)
-
-
-class ElectionSchema(Schema):
-    year = fields.Integer(
-        validate=validate.Range(min=1776, max=datetime.now().year), required=True
-    )
-    race = fields.String(required=True)
-    voteTotals = fields.Nested(ColumnSchema, many=True)
-
-    @post_load
-    @camel_to_snake
-    def create_election(self, data):
-        return Election(**data)
 
 
 class SourceSchema(Schema):
@@ -76,12 +61,36 @@ class DistrictingProblemSchema(Schema):
         return DistrictingProblem(**data)
 
 
+class ColumnSetSchema(Schema):
+    name = fields.String(required=True)
+    type = fields.String(required=True)
+    columns = fields.Nested(ColumnSchema, many=True)
+
+    @post_load
+    @camel_to_snake
+    def create_model(self, data):
+        return ColumnSet(**data)
+
+
+class UnitSetSchema(Schema):
+    unitType = fields.String(required=True)
+    idColumn = fields.Nested(ColumnSchema, required=True)
+    tilesets = fields.Nested(TilesetSchema, many=True)
+    columnSets = fields.Nested(ColumnSetSchema, many=True)
+
+    @post_load
+    @camel_to_snake
+    def create_unit_set(self, data):
+        data["id_column_key"] = data["id_column"].key
+        del data["id_column"]
+        return UnitSet(**data)
+
+
 class PlaceSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True)
     description = fields.Str()
-    elections = fields.Nested(ElectionSchema, many=True)
-    tilesets = fields.Nested(TilesetSchema, many=True)
+    unitSets = fields.Nested(UnitSetSchema, many=True)
     districtingProblems = fields.Nested(DistrictingProblemSchema, many=True)
 
     @post_load
@@ -95,7 +104,6 @@ class PlaceSchema(Schema):
             "id": place.id,
             "name": place.name,
             "description": place.description,
-            "elections": place.elections,
-            "tilesets": place.tilesets,
+            "unitSets": place.unit_sets,
             "districtingProblems": place.districting_problems,
         }
