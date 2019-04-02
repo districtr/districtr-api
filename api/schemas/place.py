@@ -75,7 +75,7 @@ class ColumnSetSchema(Schema):
 class UnitSetSchema(Schema):
     unitType = fields.String(required=True)
     idColumn = fields.Nested(ColumnSchema, required=True)
-    tilesets = fields.Nested(TilesetSchema, many=True)
+    tilesets = fields.Nested(TilesetSchema, many=True, required=True)
     columnSets = fields.Nested(ColumnSetSchema, many=True)
 
     @post_load

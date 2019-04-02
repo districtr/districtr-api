@@ -94,3 +94,11 @@ def test_place_record_with_districting_problems_is_valid(
         place_record_with_districting_problem["districtingProblems"]
     )
     assert len(errors) == 0
+
+
+def test_tilesets_are_required(place_record_with_elections, admin_headers, client):
+    del place_record_with_elections["unitSets"][0]["tilesets"]
+    response = client.post(
+        "/places/", headers=admin_headers, json=place_record_with_elections
+    )
+    assert response.status_code == 400
