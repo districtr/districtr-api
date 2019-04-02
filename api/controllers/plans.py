@@ -17,7 +17,7 @@ def new_plan():
     data = request.get_json()
 
     name = data["name"]
-    serialized = json.dumps(data["mapping"])
+    serialized = json.dumps(data["assignment"])
     place_id = data["place_id"]
 
     plan = Plan(

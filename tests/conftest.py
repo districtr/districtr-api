@@ -81,7 +81,7 @@ def user(user_record):
 
 @pytest.fixture
 def plan_record():
-    return {"name": "My plan", "mapping": {"1": 0}, "place_id": 1}
+    return {"name": "My plan", "assignment": {"1": 0}, "place_id": 1}
 
 
 @pytest.fixture

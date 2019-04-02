@@ -20,18 +20,18 @@ class PlanSchema(Schema):
     serialized = fields.Str()
 
     @post_dump
-    def decode_mapping(self, data):
+    def decode_assignment(self, data):
         if "serialized" in data:
-            data["mapping"] = json.loads(data["serialized"])
+            data["assignment"] = json.loads(data["serialized"])
             return {k: v for k, v in data.items() if k != "serialized"}
         return data
 
     @pre_load
-    def encode_mapping(self, data):
-        if "mapping" in data:
+    def encode_assignment(self, data):
+        if "assignment" in data:
             if "serialized" not in data:
-                data["serialized"] = json.dumps(data["mapping"])
-            return {k: v for k, v in data.items() if k != "mapping"}
+                data["serialized"] = json.dumps(data["assignment"])
+            return {k: v for k, v in data.items() if k != "assignment"}
         return data
 
     @post_load
