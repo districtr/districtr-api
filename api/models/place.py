@@ -8,21 +8,25 @@ class Column(db.Model):
     min = db.Column(db.Float())
     max = db.Column(db.Float())
     sum = db.Column(db.Float())
-    # Optional election id for vote total columns:
-    election_id = db.Column(db.Integer, db.ForeignKey("election.id"))
+    column_set_id = db.Column(db.Integer, db.ForeignKey("column_set.id"))
 
 
-# class UnitType(db.Model):
-#     id = db.Column(db.Integer(), primary_key=True)
-#     name = db.Column(db.String(80), nullable=False)
-
-
-class Election(db.Model):
+class ColumnSet(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    race = db.Column(db.String(80), nullable=False)
-    vote_totals = db.relationship("Column", backref="election", lazy=True)
-    year = db.Column(db.Integer(), nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+    type = db.Column(db.String(80), nullable=False)
+    columns = db.relationship("Column", backref="column_set")
+    unit_set_id = db.Column(db.Integer, db.ForeignKey("unit_set.id"), nullable=False)
+
+
+class UnitSet(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), nullable=True)
+    unit_type = db.Column(db.String(80), nullable=False)
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
+    id_column_key = db.Column(db.String(80))
+    tilesets = db.relationship("Tileset", backref="unit_set", lazy=True)
+    column_sets = db.relationship("ColumnSet", backref="unit_set", lazy=True)
 
 
 class Tileset(db.Model):
@@ -31,7 +35,7 @@ class Tileset(db.Model):
     source_url = db.Column(db.String(256), nullable=False)
     source_type = db.Column(db.String(80), nullable=False)
     source_layer = db.Column(db.String(80), nullable=False)
-    place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
+    unit_set_id = db.Column(db.Integer, db.ForeignKey("unit_set.id"))
 
 
 class DistrictingProblem(db.Model):
@@ -47,14 +51,9 @@ class Place(db.Model):
     name = db.Column(db.String(80), nullable=False)
     description = db.Column(db.Text)
 
-    # id_column_id = db.Column(db.Integer, db.ForeignKey("column.id"))
-    # unit_type_id = db.Column(db.Integer, db.ForeignKey("unit_type.id"))
+    plans = db.relationship("Plan", backref="place", lazy=True)
 
-    # columns = db.relationship("Column", backref="place", lazy=True)
-    plans = db.relationship("Plan", backref="place")
-
-    elections = db.relationship("Election", backref="place", lazy=True)
-    tilesets = db.relationship("Tileset", backref="place", lazy=True)
+    unit_sets = db.relationship("UnitSet", backref="place", lazy=True)
     districting_problems = db.relationship(
         "DistrictingProblem", backref="place", lazy=True
     )

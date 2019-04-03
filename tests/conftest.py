@@ -81,7 +81,7 @@ def user(user_record):
 
 @pytest.fixture
 def plan_record():
-    return {"name": "My plan", "mapping": {"1": 0}, "place_id": 1}
+    return {"name": "My plan", "assignment": {"1": 0}, "place_id": 1}
 
 
 @pytest.fixture
@@ -107,21 +107,18 @@ def user_headers(user_token):
 
 
 @pytest.fixture
-def place_record_with_elections():
-    return {
-        "name": "Alabama",
-        "description": "A state",
-        "elections": [
-            {
-                "race": "Presidential",
-                "year": 2008,
-                "voteTotals": [
-                    {"key": "2008D", "name": "Democratic"},
-                    {"key": "2008R", "name": "Republican"},
-                ],
-            }
-        ],
-    }
+def place_record_with_elections(place_record_with_tilesets):
+    place_record_with_tilesets["unitSets"][0]["columnSets"] = [
+        {
+            "name": "2008 Presidential",
+            "type": "election",
+            "columns": [
+                {"key": "2008D", "name": "Democratic"},
+                {"key": "2008R", "name": "Republican"},
+            ],
+        }
+    ]
+    return place_record_with_tilesets
 
 
 @pytest.fixture
@@ -129,20 +126,29 @@ def place_record_with_tilesets():
     return {
         "name": "Alabama",
         "description": "A state",
-        "tilesets": [
+        "unitSets": [
             {
-                "type": "fill",
-                "source": {"type": "vector", "url": "mapbox://districtr.pa_vtds"},
-                "sourceLayer": "pa_vtds",
-            },
-            {
-                "type": "circle",
-                "source": {
-                    "type": "vector",
-                    "url": "mapbox://districtr.pa_vtds_points",
-                },
-                "sourceLayer": "pa_vtds_points",
-            },
+                "unitType": "vtds",
+                "idColumn": {"key": "ID", "name": "ID"},
+                "tilesets": [
+                    {
+                        "type": "fill",
+                        "source": {
+                            "type": "vector",
+                            "url": "mapbox://districtr.pa_vtds",
+                        },
+                        "sourceLayer": "pa_vtds",
+                    },
+                    {
+                        "type": "circle",
+                        "source": {
+                            "type": "vector",
+                            "url": "mapbox://districtr.pa_vtds_points",
+                        },
+                        "sourceLayer": "pa_vtds_points",
+                    },
+                ],
+            }
         ],
     }
 

@@ -4,6 +4,7 @@ import pytest
 from marshmallow import ValidationError
 
 from api.schemas import PlaceRequestSchema
+from api.models import User
 
 
 @pytest.fixture
@@ -50,6 +51,26 @@ def test_can_create_requests_with_new_user(client):
         },
     )
     assert response.status_code == 201
+
+
+def test_creating_request_with_new_user_creates_user_with_user_role(app, client):
+    client.post(
+        "/requests/",
+        json={
+            "name": "Alabama",
+            "information": "",
+            "districtTypes": "State senate",
+            "user": {
+                "first": "New",
+                "last": "Person",
+                "email": "someone.else@example.com",
+                "organization": "MGGG",
+            },
+        },
+    )
+    with app.app_context():
+        user = User.by_email("someone.else@example.com")
+        assert user.has_role("user")
 
 
 def test_can_list_requests_with_admin_auth(client, admin_headers, good_request):

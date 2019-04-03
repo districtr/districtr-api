@@ -39,7 +39,7 @@ def test_can_get_single_plan_by_id(client, plan_record):
     expected = {
         "id": 1,
         "name": plan_record["name"],
-        "mapping": plan_record["mapping"],
+        "assignment": plan_record["assignment"],
         "user": {
             "id": 1,
             "first": "Example",
