@@ -27,7 +27,7 @@ def new_request():
     # Don't create a new user if they already exist
     user = User.by_email(place_request_data["user"]["email"])
     if not user:
-        user = User(**place_request_data["user"])
+        user = User.from_schema_load(place_request_data["user"])
     place_request_data["user"] = user
     place_request = PlaceRequest(**place_request_data)
     db.session.add(place_request)
