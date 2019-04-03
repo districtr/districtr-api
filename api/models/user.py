@@ -34,7 +34,9 @@ class User(db.Model):
     place_requests = db.relationship("PlaceRequest", backref="user")
     plans = db.relationship("Plan", backref="user")
 
-    def update(self, first=None, last=None, email=None, organization=None, id=None):
+    def update(
+        self, first=None, last=None, email=None, organization=None, roles=None, **kwargs
+    ):
         if first is not None:
             self.first = first
         if last is not None:
@@ -43,12 +45,12 @@ class User(db.Model):
             self.email = email
         if organization is not None:
             self.organization = organization
-
-    def is_admin(self):
-        return any(role.name == "admin" for role in self.roles)
+        if roles is not None:
+            for role in roles:
+                self.add_role(role)
 
     def belongs_to(self, user):
-        return user.id == self.id or user.is_admin()
+        return user.id == self.id or user.has_role("admin")
 
     def email_already_exists(self):
         existing = User.query.filter_by(email=self.email).first()

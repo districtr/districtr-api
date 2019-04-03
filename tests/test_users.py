@@ -163,3 +163,12 @@ def test_can_add_a_role_to_existing_user(app_without_roles):
             "user",
             "admin",
         }
+
+
+def test_can_add_role_with_put_request(client, admin_headers):
+    response = client.put(
+        "/users/2", json={"roles": ["user", "admin"]}, headers=admin_headers
+    )
+    assert 200 <= response.status_code < 300
+    response = client.get("/users/2", headers=admin_headers).get_json()
+    assert set(response["roles"]) == {"user", "admin"}
