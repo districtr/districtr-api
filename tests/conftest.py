@@ -11,6 +11,7 @@ test_config = {
     "SQLALCHEMY_TRACK_MODIFICATIONS": False,
     "SECRET_KEY": b"my_secret_key",
     "SEND_EMAILS": False,
+    "SENDGRID_API_KEY": "fake_api_key",
     "FRONTEND_BASE_URL": "https://districtr.org",
 }
 
