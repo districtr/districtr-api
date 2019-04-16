@@ -1,16 +1,16 @@
 from flask import current_app
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Content, Email, Mail
+from sendgrid.helpers.mail import Mail, From, To, HtmlContent, Subject
 
 from .exceptions import ApiException
 
 
 def send_email(from_address, to_address, subject, body):
     mail = Mail(
-        Email(from_address, name="Districtr"),
-        subject,
-        Email(to_address),
-        Content("text/html", body),
+        from_email=From(from_address, "Districtr"),
+        subject=Subject(subject),
+        to_emails=To(to_address),
+        html_content=HtmlContent(body),
     )
 
     if current_app.config.get("SEND_EMAILS", True) is False:
