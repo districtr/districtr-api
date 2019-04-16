@@ -13,6 +13,7 @@ flask-migrate = "*"
 sendgrid = "*"
 inflection = "*"
 psycopg2-binary = "*"
+sentry-sdk = {extras = ["flask"],version = "*"}
 
 [dev-packages]
 pytest = "*"

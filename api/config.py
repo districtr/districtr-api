@@ -46,3 +46,4 @@ SECRET_KEY = environment("SECRET_KEY", default="my_secret_key")
 SENDGRID_API_KEY = environment("SENDGRID_API_KEY", None)
 FRONTEND_BASE_URL = "https://districtr.org"
 SEND_EMAILS = True
+SENTRY_DSN = environment("SENTRY_DSN", None)

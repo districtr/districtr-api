@@ -18,12 +18,19 @@ class ApiFlask(Flask):
 
 def create_app(test_config=None):
     app = ApiFlask(__name__)
+
     CORS(app)
 
     if test_config is None:
         app.config.from_pyfile("config.py", silent=True)
     else:
         app.config.from_mapping(test_config)
+
+    if app.config.get("SENTRY_DSN") is not None:
+        import sentry_sdk
+        from sentry_sdk.integrations.flask import FlaskIntegration
+
+        sentry_sdk.init(dsn=app.config["SENTRY_DSN"], integrations=[FlaskIntegration()])
 
     db.init_app(app)
     Migrate(app, db)
