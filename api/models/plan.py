@@ -26,4 +26,4 @@ class Plan(db.Model):
         self.modified_at = datetime.utcnow()
 
     def belongs_to(self, user):
-        return self.user_id == user.id or user.is_admin()
+        return self.user_id == user.id or user.has_role("admin")
