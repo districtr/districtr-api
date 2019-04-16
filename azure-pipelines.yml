@@ -19,7 +19,6 @@ steps:
           architecture: "x64"
 
     - script: |
-          apt-get install libpq-dev
           pip install pipenv
           pipenv install --dev --pre
       displayName: "Install dependencies from Pipfile"

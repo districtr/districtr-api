@@ -11,8 +11,8 @@ marshmallow = "*"
 gunicorn = "*"
 flask-migrate = "*"
 sendgrid = "*"
-"psycopg2" = "*"
 inflection = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 pytest = "*"
