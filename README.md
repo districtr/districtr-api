@@ -1,6 +1,6 @@
 # Districtr API
 
-[![Build Status](https://dev.azure.com/gerrymandr/districtr/_apis/build/status/mggg.districtr-api?branchName=master)](https://dev.azure.com/gerrymandr/districtr/_build/latest?definitionId=2&branchName=master)
+[![Build Status](https://dev.azure.com/districtr/Districtr/_apis/build/status/districtr.districtr-api?branchName=master)](https://dev.azure.com/districtr/Districtr/_build/latest?definitionId=3&branchName=master)
 
 This repo holds the source code for the Districtr API. The API is written in Flask with a PostGIS database layer. We try to follow resource-oriented design principles.
 
