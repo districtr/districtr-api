@@ -44,5 +44,5 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_DATABASE_URI = get_database_uri_from_environment()
 SECRET_KEY = environment("SECRET_KEY", default="my_secret_key")
 SENDGRID_API_KEY = environment("SENDGRID_API_KEY", None)
-FRONTEND_BASE_URL = "https://mggg.org/Districtr"
+FRONTEND_BASE_URL = "https://districtr.org"
 SEND_EMAILS = True
