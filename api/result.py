@@ -14,3 +14,6 @@ class ApiResult:
             mimetype="application/json",
             headers=self.headers,
         )
+
+    def __call__(self):
+        return self.to_response()
