@@ -172,3 +172,8 @@ def test_can_add_role_with_put_request(client, admin_headers):
     assert 200 <= response.status_code < 300
     response = client.get("/users/2", headers=admin_headers).get_json()
     assert set(response["roles"]) == {"user", "admin"}
+
+
+def test_can_inspect_self_with_non_admin(user_headers, client):
+    response = client.get("/users/2", headers=user_headers)
+    assert response.status_code == 200

@@ -22,9 +22,10 @@ def list_users():
 
 
 @bp.route("/<int:id>", methods=["GET"])
-@admin_only
 def get_user(id):
     user = User.query.get_or_404(id)
+    if not user.belongs_to(get_current_user()):
+        raise Unauthorized()
     return ApiResult(user_schema.dump(user))
 
 
