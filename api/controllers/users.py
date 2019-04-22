@@ -5,7 +5,7 @@ from ..exceptions import ApiException, Unauthorized
 from ..result import ApiResult
 from ..models import Plan, User, db
 from ..schemas import UserSchema
-from .plans import plans_schema
+from .plans import plans_schema, plan_schema
 
 bp = Blueprint("users", __name__)
 
@@ -22,6 +22,7 @@ def list_users():
 
 
 @bp.route("/<int:id>", methods=["GET"])
+@authenticate
 def get_user(id):
     user = User.query.get_or_404(id)
     if not user.belongs_to(get_current_user()):
@@ -30,18 +31,24 @@ def get_user(id):
 
 
 @bp.route("/<int:user_id>/plans", methods=["GET"])
-@admin_only
+@authenticate
 def get_users_plans(user_id):
-    plans = User.query.get_or_404(user_id).plans
-    return ApiResult(plans_schema.dump(plans))
+    user = User.query.get_or_404(id)
+    if not user.belongs_to(get_current_user()):
+        raise Unauthorized()
+    return ApiResult(plans_schema.dump(user.plans))
 
 
 @bp.route("/<int:user_id>/plans/<int:plan_id>", methods=["GET"])
-@admin_only
+@authenticate
 def get_users_plan(user_id, plan_id):
-    plan = Plan.get_or_404(plan_id)
+    user = User.query.get_or_404(user_id)
+    if not user.belongs_to(get_current_user()):
+        raise Unauthorized()
+    plan = Plan.query.get_or_404(plan_id)
     if plan.user_id != user_id:
         raise ApiException("Resource not found", 404)
+    return plan_schema.dump(plan)
 
 
 @bp.route("/<int:id>", methods=["POST", "PUT", "PATCH"])
