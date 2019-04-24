@@ -78,17 +78,6 @@ def get_current_user_roles():
         return user_data["roles"]
 
 
-def authenticate(controller):
-    @functools.wraps(controller)
-    def wrapper(*args, **kwargs):
-        roles = get_current_user_roles()
-        if not roles:
-            raise Unauthenticated()
-        return controller(*args, **kwargs)
-
-    return wrapper
-
-
 def requires(roles):
     def decorator(controller):
         @functools.wraps(controller)
@@ -105,4 +94,5 @@ def requires(roles):
     return decorator
 
 
+authenticate = requires(["user"])
 admin_only = requires(["admin"])
