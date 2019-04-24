@@ -109,7 +109,7 @@ def user_headers(user_token):
 
 @pytest.fixture
 def place_record_with_elections(place_record_with_tilesets):
-    place_record_with_tilesets["unitSets"][0]["columnSets"] = [
+    place_record_with_tilesets["units"][0]["columnSets"] = [
         {
             "name": "2008 Presidential",
             "type": "election",
@@ -127,7 +127,7 @@ def place_record_with_tilesets():
     return {
         "name": "Alabama",
         "description": "A state",
-        "unitSets": [
+        "units": [
             {
                 "unitType": "vtds",
                 "idColumn": {"key": "ID", "name": "ID"},

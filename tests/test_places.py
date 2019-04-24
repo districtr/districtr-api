@@ -9,7 +9,7 @@ def test_can_list_places(client):
             "id": 1,
             "name": "Lowell, MA",
             "description": "A town",
-            "unitSets": [],
+            "units": [],
             "districtingProblems": [],
         }
     ]
@@ -27,7 +27,7 @@ def test_can_create_new_place_with_elections(
         "id",
         "name",
         "description",
-        "unitSets",
+        "units",
         "districtingProblems",
     }
 
@@ -44,29 +44,29 @@ def test_can_create_new_place_with_tilesets(
         "id",
         "name",
         "description",
-        "unitSets",
+        "units",
         "districtingProblems",
     }
     print(body)
     assert (
-        body["unitSets"][0]["tilesets"][0]
-        == place_record_with_tilesets["unitSets"][0]["tilesets"][0]
+        body["units"][0]["tilesets"][0]
+        == place_record_with_tilesets["units"][0]["tilesets"][0]
     )
 
 
 def test_place_record_with_tilesets_is_valid(place_record_with_tilesets):
     schema = TilesetSchema(many=True)
-    errors = schema.validate(place_record_with_tilesets["unitSets"][0]["tilesets"])
+    errors = schema.validate(place_record_with_tilesets["units"][0]["tilesets"])
     assert len(errors) == 0
 
 
 def test_tileset_schema_can_load_new_tileset(place_record_with_tilesets, app):
     schema = TilesetSchema(many=True)
     with app.app_context():
-        tilesets = schema.load(place_record_with_tilesets["unitSets"][0]["tilesets"])
+        tilesets = schema.load(place_record_with_tilesets["units"][0]["tilesets"])
         assert (
             tilesets[0].source_url
-            == place_record_with_tilesets["unitSets"][0]["tilesets"][0]["source"]["url"]
+            == place_record_with_tilesets["units"][0]["tilesets"][0]["source"]["url"]
         )
 
 
@@ -81,7 +81,7 @@ def test_can_create_new_place_with_districting_problem(
         "id",
         "name",
         "description",
-        "unitSets",
+        "units",
         "districtingProblems",
     }
 
@@ -97,7 +97,7 @@ def test_place_record_with_districting_problems_is_valid(
 
 
 def test_tilesets_are_required(place_record_with_elections, admin_headers, client):
-    del place_record_with_elections["unitSets"][0]["tilesets"]
+    del place_record_with_elections["units"][0]["tilesets"]
     response = client.post(
         "/places/", headers=admin_headers, json=place_record_with_elections
     )

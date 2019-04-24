@@ -90,7 +90,7 @@ class PlaceSchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True)
     description = fields.Str()
-    unitSets = fields.Nested(UnitSetSchema, many=True)
+    units = fields.Nested(UnitSetSchema, many=True)
     districtingProblems = fields.Nested(DistrictingProblemSchema, many=True)
 
     @post_load
@@ -104,6 +104,6 @@ class PlaceSchema(Schema):
             "id": place.id,
             "name": place.name,
             "description": place.description,
-            "unitSets": place.unit_sets,
+            "units": place.units,
             "districtingProblems": place.districting_problems,
         }

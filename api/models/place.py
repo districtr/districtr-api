@@ -53,7 +53,7 @@ class Place(db.Model):
 
     plans = db.relationship("Plan", backref="place", lazy=True)
 
-    unit_sets = db.relationship("UnitSet", backref="place", lazy=True)
+    units = db.relationship("UnitSet", backref="place", lazy=True)
     districting_problems = db.relationship(
         "DistrictingProblem", backref="place", lazy=True
     )
