@@ -46,7 +46,12 @@ def app(user, plan_record):
         non_admin.roles = [user_role]
         db.session.add(non_admin)
 
-        place = Place(name="Lowell, MA", description="A town")
+        place = Place(
+            slug="lowell",
+            name="Lowell, MA",
+            state="Massachusetts",
+            description="A town",
+        )
         db.session.add(place)
 
         plan = PlanSchema().load(plan_record)
@@ -113,7 +118,7 @@ def place_record_with_elections(place_record_with_tilesets):
         {
             "name": "2008 Presidential",
             "type": "election",
-            "columns": [
+            "subgroups": [
                 {"key": "2008D", "name": "Democratic"},
                 {"key": "2008R", "name": "Republican"},
             ],
@@ -125,6 +130,7 @@ def place_record_with_elections(place_record_with_tilesets):
 @pytest.fixture
 def place_record_with_tilesets():
     return {
+        "id": "alabama",
         "name": "Alabama",
         "description": "A state",
         "units": [
@@ -157,6 +163,7 @@ def place_record_with_tilesets():
 @pytest.fixture
 def place_record_with_districting_problem():
     return {
+        "id": "alabama",
         "name": "Alabama",
         "description": "A state",
         "districtingProblems": [

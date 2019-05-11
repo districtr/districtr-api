@@ -1,8 +1,11 @@
-from marshmallow import Schema, fields, post_load, pre_dump
-from marshmallow.validate import OneOf
+import re
+
+from marshmallow import Schema, fields, post_load, pre_dump, pre_load
+from marshmallow.validate import OneOf, Regexp
+from us import states
 
 from ..models import Place
-from ..models.place import Column, UnitSet, ColumnSet, DistrictingProblem, Tileset
+from ..models.place import Column, ColumnSet, DistrictingProblem, Tileset, UnitSet
 from ..utils import camel_to_snake
 
 
@@ -64,7 +67,8 @@ class DistrictingProblemSchema(Schema):
 class ColumnSetSchema(Schema):
     name = fields.String(required=True)
     type = fields.String(required=True)
-    columns = fields.Nested(ColumnSchema, many=True)
+    subgroups = fields.Nested(ColumnSchema, many=True)
+    total = fields.Nested(ColumnSchema)
 
     @post_load
     @camel_to_snake
@@ -73,6 +77,7 @@ class ColumnSetSchema(Schema):
 
 
 class UnitSetSchema(Schema):
+    id = fields.String(required=True)
     unitType = fields.String(required=True)
     idColumn = fields.Nested(ColumnSchema, required=True)
     tilesets = fields.Nested(TilesetSchema, many=True, required=True)
@@ -83,27 +88,26 @@ class UnitSetSchema(Schema):
     def create_unit_set(self, data):
         data["id_column_key"] = data["id_column"].key
         del data["id_column"]
+
         return UnitSet(**data)
 
 
 class PlaceSchema(Schema):
     id = fields.Int(dump_only=True)
+    slug = fields.Str(required=True, validate=Regexp(re.compile("^[a-zA-Z0-9_-]*$")))
     name = fields.Str(required=True)
+    state = fields.Str(required=True)
     description = fields.Str()
     units = fields.Nested(UnitSetSchema, many=True)
     districtingProblems = fields.Nested(DistrictingProblemSchema, many=True)
+
+    @pre_load
+    def lookup_state(self, data):
+        state = states.lookup(data["state"])
+        data["state"] = state.name
+        return data
 
     @post_load
     @camel_to_snake
     def create_place(self, data):
         return Place(**data)
-
-    @pre_dump
-    def dump_place(self, place):
-        return {
-            "id": place.id,
-            "name": place.name,
-            "description": place.description,
-            "units": place.units,
-            "districtingProblems": place.districting_problems,
-        }

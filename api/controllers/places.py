@@ -22,15 +22,15 @@ def resource_blueprint(Schema, Model, name):
         records = plural_schema.dump(resources)
         return ApiResult(records)
 
-    @bp.route("/<int:id>", methods=["GET"])
-    def get(id):
-        resource = Model.query.get_or_404(id)
+    @bp.route("/<slug>", methods=["GET"])
+    def get(slug):
+        resource = Model.by_slug(slug)
         return ApiResult(schema.dump(resource))
 
-    @bp.route("/<int:id>", methods=["POST", "PUT", "PATCH"])
+    @bp.route("/<slug>", methods=["POST", "PUT", "PATCH"])
     @authenticate
-    def update(id):
-        resource = Model.query.get_or_404(id)
+    def update(slug):
+        resource = Model.by_slug(slug)
 
         if not resource.belongs_to(get_current_user()):
             raise ApiException("You are not authorized to edit this resource.", 403)
@@ -41,10 +41,13 @@ def resource_blueprint(Schema, Model, name):
 
         return ApiResult(schema.dump(resource))
 
-    @bp.route("/<int:id>", methods=["DELETE"])
+    @bp.route("/<slug>", methods=["DELETE"])
     @admin_only
-    def delete(id):
-        resource = Model.query.get_or_404(id)
+    def delete(slug):
+        resource = Model.by_slug(slug)
+
+        if not resource.belongs_to(get_current_user()):
+            raise ApiException("You are not authorized to delete this resource.", 403)
 
         db.session.delete(resource)
         db.session.commit()
