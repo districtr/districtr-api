@@ -4,7 +4,8 @@ import sys
 
 import requests
 
-API = "https://api.districtr.org"
+# API = "https://api.districtr.org"
+API = "http://localhost:5000"
 TOKEN = os.environ.get("DISTRICTR_API_TOKEN")
 HEADERS = {"Authorization": "Bearer " + TOKEN}
 
@@ -14,19 +15,22 @@ def main(path):
         places = json.load(f)
 
     for place in places:
-        serialized_place = {
-            "name": place["name"],
-            "description": place.get("description", ""),
-        }
-        response = requests.post(
-            API + "/places/", headers=HEADERS, json=serialized_place
-        )
+        data = convert(place)
+        response = requests.post(API + "/places/", headers=HEADERS, json=data)
         print(response)
         if response.status_code >= 200 and response.status_code < 400:
             print(response.json())
         else:
             print(response.text)
             break
+
+
+def convert(data):
+    del data["districtingProblems"]
+    del data["units"]
+    data["slug"] = data["id"]
+    del data["slug"]
+    return data
 
 
 if __name__ == "__main__":

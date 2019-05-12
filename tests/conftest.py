@@ -46,7 +46,12 @@ def app(user, plan_record):
         non_admin.roles = [user_role]
         db.session.add(non_admin)
 
-        place = Place(name="Lowell, MA", description="A town")
+        place = Place(
+            slug="lowell",
+            name="Lowell, MA",
+            state="Massachusetts",
+            description="A town",
+        )
         db.session.add(place)
 
         plan = PlanSchema().load(plan_record)
@@ -109,11 +114,11 @@ def user_headers(user_token):
 
 @pytest.fixture
 def place_record_with_elections(place_record_with_tilesets):
-    place_record_with_tilesets["unitSets"][0]["columnSets"] = [
+    place_record_with_tilesets["units"][0]["columnSets"] = [
         {
             "name": "2008 Presidential",
             "type": "election",
-            "columns": [
+            "subgroups": [
                 {"key": "2008D", "name": "Democratic"},
                 {"key": "2008R", "name": "Republican"},
             ],
@@ -125,9 +130,10 @@ def place_record_with_elections(place_record_with_tilesets):
 @pytest.fixture
 def place_record_with_tilesets():
     return {
+        "id": "alabama",
         "name": "Alabama",
         "description": "A state",
-        "unitSets": [
+        "units": [
             {
                 "unitType": "vtds",
                 "idColumn": {"key": "ID", "name": "ID"},
@@ -157,6 +163,7 @@ def place_record_with_tilesets():
 @pytest.fixture
 def place_record_with_districting_problem():
     return {
+        "id": "alabama",
         "name": "Alabama",
         "description": "A state",
         "districtingProblems": [

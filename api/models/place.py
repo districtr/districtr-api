@@ -15,7 +15,7 @@ class ColumnSet(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     type = db.Column(db.String(80), nullable=False)
-    columns = db.relationship("Column", backref="column_set")
+    columns = db.relationship("Column", backref="column_set", lazy=False)
     unit_set_id = db.Column(db.Integer, db.ForeignKey("unit_set.id"), nullable=False)
 
 
@@ -25,8 +25,8 @@ class UnitSet(db.Model):
     unit_type = db.Column(db.String(80), nullable=False)
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
     id_column_key = db.Column(db.String(80))
-    tilesets = db.relationship("Tileset", backref="unit_set", lazy=True)
-    column_sets = db.relationship("ColumnSet", backref="unit_set", lazy=True)
+    tilesets = db.relationship("Tileset", backref="unit_set", lazy=False)
+    column_sets = db.relationship("ColumnSet", backref="unit_set", lazy=False)
 
 
 class Tileset(db.Model):
@@ -48,15 +48,21 @@ class DistrictingProblem(db.Model):
 
 class Place(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    slug = db.Column(db.String(80), nullable=False, unique=True, index=True)
     name = db.Column(db.String(80), nullable=False)
+    state = db.Column(db.String(80), nullable=False)
     description = db.Column(db.Text)
 
     plans = db.relationship("Plan", backref="place", lazy=True)
 
-    unit_sets = db.relationship("UnitSet", backref="place", lazy=True)
-    districting_problems = db.relationship(
-        "DistrictingProblem", backref="place", lazy=True
-    )
+    # units = db.relationship("UnitSet", backref="place", lazy=False)
+    # districting_problems = db.relationship(
+    # "DistrictingProblem", backref="place", lazy=False
+    # )
+
+    @classmethod
+    def by_slug(cls, slug):
+        return cls.query.filter_by(slug=slug).first_or_404()
 
     def __repr__(self):
         return "<Place {}>".format(self.name)

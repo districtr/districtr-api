@@ -1,7 +1,7 @@
 import functools
 
 from flask import current_app, request
-from itsdangerous import JSONWebSignatureSerializer, URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, TimedJSONWebSignatureSerializer
 
 from .exceptions import Unauthenticated, Unauthorized
 from .models import User
@@ -9,6 +9,8 @@ from .schemas import UserSchema
 from .utils import gcache
 
 token_data_schema = UserSchema(only=("id", "first", "last", "email", "roles"))
+
+ONE_WEEK = 604800
 
 
 def exchange_signin_token_for_bearer_token(signin_token):
@@ -29,7 +31,9 @@ def create_signin_token(user):
 
 
 def create_bearer_token(user):
-    serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
+    serializer = TimedJSONWebSignatureSerializer(
+        current_app.config["SECRET_KEY"], expires_in=ONE_WEEK
+    )
 
     return serializer.dumps(token_data_schema.dump(user))
 
@@ -53,7 +57,9 @@ def load_token_data(request):
     if not token:
         return None
 
-    serializer = JSONWebSignatureSerializer(current_app.config["SECRET_KEY"])
+    serializer = TimedJSONWebSignatureSerializer(
+        current_app.config["SECRET_KEY"], expires_in=ONE_WEEK
+    )
     token_data = serializer.loads(token)
 
     return token_data
@@ -78,17 +84,6 @@ def get_current_user_roles():
         return user_data["roles"]
 
 
-def authenticate(controller):
-    @functools.wraps(controller)
-    def wrapper(*args, **kwargs):
-        roles = get_current_user_roles()
-        if not roles:
-            raise Unauthenticated()
-        return controller(*args, **kwargs)
-
-    return wrapper
-
-
 def requires(roles):
     def decorator(controller):
         @functools.wraps(controller)
@@ -105,4 +100,5 @@ def requires(roles):
     return decorator
 
 
+authenticate = requires(["user"])
 admin_only = requires(["admin"])

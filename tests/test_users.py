@@ -53,7 +53,6 @@ def test_deleting_a_user_requires_admin_role(client, admin_headers):
         },
         headers=admin_headers,
     )
-    print(response)
     user_id = response.get_json()["id"]
 
     # Try to delete without auth headers

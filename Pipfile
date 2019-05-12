@@ -14,6 +14,7 @@ sendgrid = "*"
 inflection = "*"
 psycopg2-binary = "*"
 sentry-sdk = {extras = ["flask"],version = "*"}
+us = "*"
 
 [dev-packages]
 pytest = "*"
