@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 
-from ..auth import admin_only, authenticate, get_current_user
+from ..auth import admin_only, get_current_user
 from ..exceptions import ApiException
 from ..models import Place, db
 from ..result import ApiResult
@@ -25,20 +25,6 @@ def resource_blueprint(Schema, Model, name):
     @bp.route("/<slug>", methods=["GET"])
     def get(slug):
         resource = Model.by_slug(slug)
-        return ApiResult(schema.dump(resource))
-
-    @bp.route("/<slug>", methods=["POST", "PUT", "PATCH"])
-    @authenticate
-    def update(slug):
-        resource = Model.by_slug(slug)
-
-        if not resource.belongs_to(get_current_user()):
-            raise ApiException("You are not authorized to edit this resource.", 403)
-
-        data = request.get_json()
-        resource.update(**data)
-        db.session.commit()
-
         return ApiResult(schema.dump(resource))
 
     @bp.route("/<slug>", methods=["DELETE"])
