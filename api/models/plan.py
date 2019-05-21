@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from flask import json
+
 from .db import db
 
 
@@ -27,7 +29,8 @@ class Plan(db.Model):
     def __repr__(self):
         return "<Plan {}>".format(self.name)
 
-    def update(self, name=None, serialized=None):
+    def update(self, name=None, assignment=None):
+        serialized = json.dumps(assignment) if assignment is not None else None
         if name is not None:
             self.name = name
         if serialized is not None:

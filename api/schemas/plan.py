@@ -1,7 +1,6 @@
 from flask import json
-from marshmallow import Schema, fields, post_dump, post_load, pre_load, pre_dump
+from marshmallow import Schema, fields, post_dump, pre_load, pre_dump
 
-from ..models import Plan
 from .user import UserSchema
 from .place import DistrictingProblemSchema, UnitSetSchema, PlaceSchema
 
@@ -42,11 +41,6 @@ class PlanSchema(Schema):
             return {k: v for k, v in data.items() if k != "assignment"}
         return data
 
-    @post_load
-    def create_plan(self, data):
-        print(data)
-        return Plan(**data)
-
 
 class PartSchema(Schema):
     id = fields.Int(validate=lambda n: n >= 0)
@@ -56,6 +50,8 @@ class PartSchema(Schema):
 
 
 class PlanSchemaOut(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
     place = fields.Nested(
         PlaceSchema(only=("id", "slug", "name", "state", "description"))
     )

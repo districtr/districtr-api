@@ -2,7 +2,8 @@ import pytest
 
 from api import create_app
 from api.auth import create_bearer_token
-from api.models import Place, Role, User, db
+from api.models import Place, Role, User, db, Plan
+from api.models.place import DistrictingProblem, UnitSet
 from api.schemas import PlanSchema
 
 test_config = {
@@ -51,10 +52,25 @@ def app(user, plan_record):
             name="Lowell, MA",
             state="Massachusetts",
             description="A town",
+            districting_problems=[
+                DistrictingProblem(
+                    number_of_parts=9,
+                    name="Town Council",
+                    plural_noun="Town Council Districts",
+                )
+            ],
+            units=[
+                UnitSet(
+                    name="Blocks",
+                    unit_type="block",
+                    slug="blocks",
+                    bounds="[[0, 100], [0, 100]]",
+                )
+            ],
         )
         db.session.add(place)
 
-        plan = PlanSchema().load(plan_record)
+        plan = Plan(**PlanSchema().load(plan_record))
         plan.user = user
         db.session.add(plan)
 
@@ -87,7 +103,13 @@ def user(user_record):
 
 @pytest.fixture
 def plan_record():
-    return {"name": "My plan", "assignment": {"1": 0}, "place_id": 1}
+    return {
+        "name": "My plan",
+        "assignment": {"1": 0},
+        "place_id": 1,
+        "problem_id": 1,
+        "units_id": 1,
+    }
 
 
 @pytest.fixture
@@ -135,8 +157,8 @@ def place_record_with_tilesets():
         "description": "A state",
         "units": [
             {
-                "unitType": "vtds",
-                "idColumn": {"key": "ID", "name": "ID"},
+                "unit_type": "vtds",
+                "id_column": {"key": "ID", "name": "ID"},
                 "tilesets": [
                     {
                         "type": "fill",
@@ -166,11 +188,11 @@ def place_record_with_districting_problem():
         "id": "alabama",
         "name": "Alabama",
         "description": "A state",
-        "districtingProblems": [
+        "districting_problems": [
             {
-                "numberOfParts": 4,
+                "number_of_parts": 4,
                 "name": "Town Council",
-                "pluralNoun": "Town Council Districts",
+                "plural_noun": "Town Council Districts",
             }
         ],
     }

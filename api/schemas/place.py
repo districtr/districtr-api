@@ -54,9 +54,12 @@ class TilesetSchema(Schema):
 
 class DistrictingProblemSchema(Schema):
     id = fields.Int(dump_only=True)
-    number_of_parts = fields.Int(required=True)
+    number_of_parts = fields.Int()
     name = fields.Str(required=True)
     plural_noun = fields.Str(default="Districts", required=True)
+    type = fields.Str(
+        validate=OneOf(["districts", "community", "multimember"]), default="districts"
+    )
 
     @post_load
     def create_districting_problem(self, data):
@@ -107,12 +110,20 @@ class UnitSetSchema(Schema):
         return UnitSet(**data)
 
 
+class LandmarksSchema(Schema):
+    id: fields.Str()
+    type: fields.Str()
+    source: fields.Dict(keys=fields.Str())
+
+
 class PlaceSchema(Schema):
     id = fields.Int(dump_only=True)
     slug = fields.Str(required=True, validate=Regexp(re.compile("^[a-zA-Z0-9_]*$")))
     name = fields.Str(required=True)
     state = fields.Str(required=True)
     description = fields.Str()
+    landmarks = fields.Nested(LandmarksSchema)
+
     units = fields.Nested(UnitSetSchema, many=True)
     districting_problems = fields.Nested(DistrictingProblemSchema, many=True)
 
@@ -124,4 +135,6 @@ class PlaceSchema(Schema):
 
     @post_load
     def create_place(self, data):
+        if "landmarks" in data:
+            data["landmarks"] = json.dumps(data["landmarks"])
         return Place(**data)

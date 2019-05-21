@@ -9,7 +9,6 @@ class Column(db.Model):
     max = db.Column(db.Float())
     sum = db.Column(db.Float())
     column_set_id = db.Column(db.Integer, db.ForeignKey("column_set.id"))
-    # column_set = db.relationship("ColumnSet", foreign_keys=[column_set_id])
 
 
 class ColumnSet(db.Model):
@@ -32,13 +31,17 @@ class UnitSet(db.Model):
     slug = db.Column(db.String(80), nullable=False)
     name = db.Column(db.String(80), nullable=True)
     unit_type = db.Column(db.String(80), nullable=False)
+
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
     id_column_id = db.Column(db.Integer, db.ForeignKey("column.id"))
     name_column_id = db.Column(db.Integer, db.ForeignKey("column.id"))
+
     id_column = db.relationship("Column", foreign_keys=[id_column_id])
     name_column = db.relationship("Column", foreign_keys=[name_column_id])
     tilesets = db.relationship("Tileset", backref="unit_set", lazy=False)
     column_sets = db.relationship("ColumnSet", backref="unit_set", lazy=False)
+
+    # JSON serialized:
     bounds = db.Column(db.String(256), nullable=False)
 
 
@@ -53,10 +56,11 @@ class Tileset(db.Model):
 
 class DistrictingProblem(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    number_of_parts = db.Column(db.Integer(), nullable=False)
+    number_of_parts = db.Column(db.Integer(), nullable=True)
     name = db.Column(db.String(256), nullable=False)
     plural_noun = db.Column(db.String(256), nullable=False)
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
+    type = db.Column(db.String(256), nullable=False, default="districts")
 
 
 class Place(db.Model):
@@ -65,6 +69,9 @@ class Place(db.Model):
     name = db.Column(db.String(80), nullable=False)
     state = db.Column(db.String(80), nullable=False)
     description = db.Column(db.Text)
+
+    # JSON-serialized landmarks object
+    landmarks = db.Column(db.Text)
 
     plans = db.relationship("Plan", backref="place", lazy=True)
 

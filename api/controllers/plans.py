@@ -1,4 +1,4 @@
-from flask import Blueprint, json, jsonify, request
+from flask import Blueprint, request
 
 from ..auth import authenticate, get_current_user
 from ..exceptions import ApiException
@@ -28,16 +28,14 @@ plan_schema_out = PlanSchemaOut()
 @bp.route("/", methods=["POST"])
 @authenticate
 def new_plan():
-    data = request.get_json()
+    data = plan_schema.load(request.get_json())
 
     name = data["name"]
-    serialized = json.dumps(data["assignment"])
     place_id = data["place_id"]
     problem_id = data["problem_id"]
     units_id = data["units_id"]
     parts = data.get("parts", None)
-    if parts is not None:
-        parts = json.dumps(parts)
+    serialized = data.get("serialized", None)
 
     plan = Plan(
         name=name,
@@ -51,7 +49,7 @@ def new_plan():
 
     db.session.add(plan)
     db.session.commit()
-    return jsonify(id=plan.id), 201
+    return ApiResult(plan_schema_out.dump(plan), 201)
 
 
 @bp.route("/", methods=["GET"])
@@ -59,7 +57,7 @@ def list_plans():
     """List all plans."""
     plans = Plan.query.all()
     records = plans_schema.dump(plans)
-    return jsonify(records)
+    return ApiResult(records)
 
 
 @authenticate
@@ -72,7 +70,7 @@ def list_my_plans():
 @bp.route("/<int:id>", methods=["GET"])
 def get_plan(id):
     plan = Plan.query.get_or_404(id)
-    return jsonify(plan_schema_out.dump(plan))
+    return ApiResult(plan_schema_out.dump(plan))
 
 
 @bp.route("/<int:id>", methods=["PATCH", "PUT"])
@@ -85,9 +83,8 @@ def update_plan(id):
         raise ApiException("You are not authorized to edit this resource.", 403)
 
     data = request.get_json()
-    plan.update(
-        name=data.get("name", None), serialized=json.dumps(data.get("serialized", None))
-    )
+
+    plan.update(**data)
     db.session.commit()
 
     return "", 204

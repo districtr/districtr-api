@@ -46,9 +46,18 @@ def test_can_get_single_plan_by_id(client, plan_record):
             "last": "Person",
             "email": "me@example.com",
         },
+        "place": {
+            "description": "A town",
+            "slug": "lowell",
+            "id": 1,
+            "name": "Lowell, MA",
+            "state": "Massachusetts",
+        },
     }
     response = client.get("/plans/1")
-    assert response.get_json() == expected
+    result = response.get_json()
+    for key in expected:
+        assert result.get(key) == expected[key]
 
 
 def test_single_plan_records_have_users(client):
