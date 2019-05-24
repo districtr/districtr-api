@@ -32,7 +32,7 @@ class User(db.Model):
 
     roles = db.relationship("Role", secondary=roles, lazy="subquery")
     place_requests = db.relationship("PlaceRequest", backref="user")
-    plans = db.relationship("Plan", backref="user")
+    plans = db.relationship("Plan", backref="user", lazy=True)
 
     def update(
         self, first=None, last=None, email=None, organization=None, roles=None, **kwargs

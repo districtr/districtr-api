@@ -9,8 +9,21 @@ lowell = {
     "name": "Lowell, MA",
     "state": "Massachusetts",
     "description": "A town",
-    # "units": [],
-    # "districtingProblems": [],
+    "districting_problems": [
+        {
+            "number_of_parts": 9,
+            "name": "Town Council",
+            "plural_noun": "Town Council Districts",
+        }
+    ],
+    "units": [
+        {
+            "name": "Blocks",
+            "unit_type": "block",
+            "slug": "blocks",
+            "bounds": [[0, 100], [0, 100]],
+        }
+    ],
 }
 
 
@@ -18,17 +31,36 @@ def test_can_list_places(client):
     response = client.get("/places/")
     places = response.get_json()
     assert len(places) == 1
-    assert places[0] == lowell
+    assert set(places[0].keys()) == {
+        "id",
+        "slug",
+        "name",
+        "state",
+        "description",
+        "districting_problems",
+        "units",
+        "landmarks",
+    }
 
 
 def test_can_get_place_by_slug(client):
     response = client.get("/places/lowell")
-    assert response.get_json() == lowell
+    result = response.get_json()
+    assert set(result.keys()) == {
+        "id",
+        "slug",
+        "name",
+        "state",
+        "description",
+        "districting_problems",
+        "units",
+        "landmarks",
+    }
 
 
 def test_looks_up_state_name():
     schema = PlaceSchema()
-    data = {"slug": "santa-clara", "name": "Santa Clara", "state": "CA"}
+    data = {"slug": "santa_clara", "name": "Santa Clara", "state": "CA"}
     place = schema.load(data)
     assert place.state == "California"
 
@@ -38,9 +70,12 @@ def test_regex_only_approves_valid_slugs():
     data = {"slug": "this is not url-safe", "name": "Santa Clara", "state": "CA"}
     with pytest.raises(ValidationError):
         schema.load(data)
-    data = {"slug": "but-this-is", "name": "Santa Clara", "state": "CA"}
+    data = {"slug": "not-url-safe-either", "name": "Santa Clara", "state": "CA"}
+    with pytest.raises(ValidationError):
+        schema.load(data)
+    data = {"slug": "but_this_is", "name": "Santa Clara", "state": "CA"}
     loaded = schema.load(data)
-    assert loaded.slug == "but-this-is"
+    assert loaded.slug == "but_this_is"
 
 
 # def test_can_create_new_place_with_elections(
@@ -121,7 +156,7 @@ def test_place_record_with_districting_problems_is_valid(
 ):
     schema = DistrictingProblemSchema(many=True)
     errors = schema.validate(
-        place_record_with_districting_problem["districtingProblems"]
+        place_record_with_districting_problem["districting_problems"]
     )
     assert len(errors) == 0
 
