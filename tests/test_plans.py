@@ -9,7 +9,7 @@ def test_create_plan(client, plan_record, admin_headers):
 def test_created_plan_shows_up_in_list(client, admin_headers, plan_record):
     number_of_plans = len(client.get("/plans/").get_json())
     client.post("/plans/", json=plan_record, headers=admin_headers)
-    response = client.get("/plans/")
+    response = client.get("/plans/", headers=admin_headers)
 
     assert len(response.get_json()) == number_of_plans + 1
 
@@ -32,10 +32,10 @@ def test_deleting_a_plan_requires_authentication(client):
 def test_delete_plan(client, admin_headers):
     response = client.delete("/plans/1", headers=admin_headers)
     assert response.status_code == 204
-    assert client.get("/plans/1").status_code == 404
+    assert client.get("/plans/1", headers=admin_headers).status_code == 404
 
 
-def test_can_get_single_plan_by_id(client, plan_record):
+def test_can_get_single_plan_by_id(client, plan_record, admin_headers):
     expected = {
         "id": 1,
         "name": plan_record["name"],
@@ -54,14 +54,14 @@ def test_can_get_single_plan_by_id(client, plan_record):
             "state": "Massachusetts",
         },
     }
-    response = client.get("/plans/1")
+    response = client.get("/plans/1", headers=admin_headers)
     result = response.get_json()
     for key in expected:
         assert result.get(key) == expected[key]
 
 
-def test_single_plan_records_have_users(client):
-    response = client.get("/plans/1")
+def test_single_plan_records_have_users(client, admin_headers):
+    response = client.get("/plans/1", headers=admin_headers)
     assert "user" in response.get_json()
 
 
