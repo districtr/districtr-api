@@ -146,8 +146,8 @@ class PlaceSchema(Schema):
 
     @pre_dump
     def decode_landmarks(self, data):
-        if data.landmarks:
+        if hasattr(data, "landmarks"):
             data = {key: getattr(data, key) for key in self.fields}
-            data["landmarks"] = json.loads(data.landmarks)
+            data["landmarks"] = json.loads(data["landmarks"])
             return data
         return data
