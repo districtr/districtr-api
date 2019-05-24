@@ -148,6 +148,8 @@ class PlaceSchema(Schema):
     def decode_landmarks(self, data):
         if hasattr(data, "landmarks"):
             data = {key: getattr(data, key) for key in self.fields}
-            data["landmarks"] = json.loads(data["landmarks"])
+            data["landmarks"] = (
+                json.loads(data["landmarks"]) if data["landmarks"] is not None else None
+            )
             return data
         return data
