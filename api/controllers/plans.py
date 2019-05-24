@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 
-from ..auth import authenticate, get_current_user
+from ..auth import authenticate, get_current_user, admin_only
 from ..exceptions import ApiException
 from ..result import ApiResult
 from ..models import Plan, db
@@ -26,7 +26,7 @@ plan_schema_out = PlanSchemaOut()
 
 
 @bp.route("/", methods=["POST"])
-@authenticate
+@admin_only
 def new_plan():
     data = plan_schema.load(request.get_json())
 
@@ -53,9 +53,10 @@ def new_plan():
 
 
 @bp.route("/", methods=["GET"])
+@admin_only
 def list_plans():
     """List all plans."""
-    plans = Plan.query.all()
+    plans = Plan.query.order_by(Plan.modified_at.desc())
     records = plans_schema.dump(plans)
     return ApiResult(records)
 
@@ -63,13 +64,21 @@ def list_plans():
 @authenticate
 def list_my_plans():
     user = get_current_user()
-    records = plans_schema.dump(user.plans)
+    records = plans_schema.dump(
+        Plan.query.with_parent(user).order_by(Plan.modified_at.desc())
+    )
     return ApiResult(records)
 
 
 @bp.route("/<int:id>", methods=["GET"])
+@authenticate
 def get_plan(id):
     plan = Plan.query.get_or_404(id)
+
+    user = get_current_user()
+    if not plan.belongs_to(user):
+        raise ApiException("You are not authorized to view this resource.", 403)
+
     return ApiResult(plan_schema_out.dump(plan))
 
 

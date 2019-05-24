@@ -60,10 +60,21 @@ class DistrictingProblemSchema(Schema):
     type = fields.Str(
         validate=OneOf(["districts", "community", "multimember"]), default="districts"
     )
+    units = fields.List(fields.Str())
 
     @post_load
     def create_districting_problem(self, data):
+        if "units" in data:
+            data["units"] = json.dumps(data["units"])
         return DistrictingProblem(**data)
+
+    @pre_dump
+    def decode_units(self, data):
+        if data.units:
+            data = {key: getattr(data, key) for key in self.fields}
+            data["units"] = json.loads(data["units"])
+            return data
+        return data
 
 
 class ColumnSetSchema(Schema):
@@ -110,19 +121,13 @@ class UnitSetSchema(Schema):
         return UnitSet(**data)
 
 
-class LandmarksSchema(Schema):
-    id: fields.Str()
-    type: fields.Str()
-    source: fields.Dict(keys=fields.Str())
-
-
 class PlaceSchema(Schema):
     id = fields.Int(dump_only=True)
     slug = fields.Str(required=True, validate=Regexp(re.compile("^[a-zA-Z0-9_]*$")))
     name = fields.Str(required=True)
     state = fields.Str(required=True)
     description = fields.Str()
-    landmarks = fields.Nested(LandmarksSchema)
+    landmarks = fields.Dict()
 
     units = fields.Nested(UnitSetSchema, many=True)
     districting_problems = fields.Nested(DistrictingProblemSchema, many=True)
@@ -138,3 +143,11 @@ class PlaceSchema(Schema):
         if "landmarks" in data:
             data["landmarks"] = json.dumps(data["landmarks"])
         return Place(**data)
+
+    @pre_dump
+    def decode_landmarks(self, data):
+        if data.landmarks:
+            data = {key: getattr(data, key) for key in self.fields}
+            data["landmarks"] = json.loads(data["landmarks"])
+            return data
+        return data

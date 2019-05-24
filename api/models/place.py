@@ -61,6 +61,7 @@ class DistrictingProblem(db.Model):
     plural_noun = db.Column(db.String(256), nullable=False)
     place_id = db.Column(db.Integer, db.ForeignKey("place.id"))
     type = db.Column(db.String(256), nullable=False, default="districts")
+    units = db.Column(db.Text)
 
 
 class Place(db.Model):
